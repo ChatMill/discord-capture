@@ -12,6 +12,17 @@
 
 ---
 
+## 依赖安装说明
+
+本项目依赖管理仅使用 requirements.txt。依赖新增/升级时请只维护 requirements.txt 文件。
+
+安装依赖：
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## 项目简介
 
 **discord-capture** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM 工具自动捕捉频道消息、命令与用户输入，并将其结构化为后续智能处理（agent 能力插件）的原始数据。该模块作为 Chatmill 全流程自动化协作的起点，支持需求捕捉、内容生成、任务拆解、反馈收集等多种场景。

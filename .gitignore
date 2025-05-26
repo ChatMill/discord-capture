@@ -6,3 +6,15 @@
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
+/PLAN.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Environment
+.env
+
+# VSCode
+.vscode/
