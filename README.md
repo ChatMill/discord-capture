@@ -23,6 +23,34 @@ pip install -r requirements.txt
 
 ---
 
+## 本地开发一键启动（含 mock agent & publish）
+
+本项目支持一键拉起主服务和 mock agent/publish 服务，便于本地联调和开发。
+
+### 启动命令
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+- 主服务（discord-capture）：监听 8101 端口
+- mock agent 服务：监听 8201 端口
+- mock publish 服务：监听 8301 端口
+
+### 相关文件说明
+
+- `docker-compose.dev.yml`：开发环境一键启动配置
+- `Dockerfile.dev`：主服务镜像构建文件，自动安装 requirements.txt 依赖
+- `mock/Dockerfile.mock`、`mock/mock.requirements.txt`：mock 服务镜像及依赖（仅安装 fastapi、uvicorn）
+
+### 说明
+
+- 所有服务均支持代码热更新（通过 `volumes: - .:/app`），适合本地开发调试。
+- mock 服务分别暴露 `/health` 和 webhook 路由，便于联调。
+- 如需停止服务，使用 `Ctrl+C` 或 `docker compose -f docker-compose.dev.yml down`。
+
+---
+
 ## 项目简介
 
 **discord-capture** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM 工具自动捕捉频道消息、命令与用户输入，并将其结构化为后续智能处理（agent 能力插件）的原始数据。该模块作为 Chatmill 全流程自动化协作的起点，支持需求捕捉、内容生成、任务拆解、反馈收集等多种场景。

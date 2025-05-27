@@ -1,0 +1,10 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY mock.requirements.txt .
+RUN pip install --no-cache-dir -r mock.requirements.txt
+
+COPY . .
+
+# CMD 由 docker-compose 指定 
