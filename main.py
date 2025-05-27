@@ -12,6 +12,6 @@ import discord
 if __name__ == '__main__':
     intents = discord.Intents.default()
     client = DiscordBotClient(intents=intents)
-    client.run(settings.DISCORD_TOKEN)
+    client.run(settings.MISS_SPEC_DISCORD_TOKEN)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

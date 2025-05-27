@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     """
     Application configuration settings, loaded from environment variables or .env file.
     """
-    DISCORD_TOKEN: str = Field(..., description="Discord Bot Token")
-    DISCORD_CLIENT_ID: str = Field(..., description="Discord Bot Client ID")
-    GUILD_IDS: List[int] = Field(default_factory=list, description="List of Discord Guild (Server) IDs to listen to")
+    MISS_SPEC_DISCORD_TOKEN: str = Field(..., description="Miss Spec Discord Bot Token")
+    MISS_SPEC_CLIENT_ID: str = Field(..., description="Miss Spec Discord Bot Client ID")
+    MISS_SPEC_GUILD_IDS: List[int] = Field(default_factory=list, description="List of Miss Spec Discord Guild (Server) IDs to listen to")
     AGENT_ROUTES: Dict[str, str] = Field(default_factory=dict, description="Agent webhook routes mapping")
     PUBLISH_ROUTES: Dict[str, str] = Field(default_factory=dict, description="Publish endpoint routes mapping")
     MAX_MESSAGE_FETCH_COUNT: int = Field(default=25, description="Max messages to fetch per request")
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     PORT: int = Field(default=8000, description="API server port")
     HOST: str = Field(default="0.0.0.0", description="API server host")
 
-    @validator("GUILD_IDS", pre=True)
+    @validator("MISS_SPEC_GUILD_IDS", pre=True)
     def parse_guild_ids(cls, v):
         if isinstance(v, str):
             return [int(i.strip()) for i in v.split(",") if i.strip()]
