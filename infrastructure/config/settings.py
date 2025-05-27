@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 from pydantic import Field, validator
 from typing import Optional, List, Dict
 import json
+from enum import Enum
 
 
 class Settings(BaseSettings):
@@ -43,4 +44,42 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-settings = Settings() 
+
+settings = Settings()
+
+
+class AgentServiceName(str, Enum):
+    MISS_SPEC = "missspec"  # Miss Spec agent service
+    # Add more agent service names as needed
+
+
+class PublisherServiceName(str, Enum):
+    GITHUB = "github"        # GitHub publisher
+    NOTION = "notion"        # Notion publisher
+    CONFLUENCE = "confluence" # Confluence publisher
+    FEISHU = "feishu"        # Feishu publisher
+    # Add more publisher service names as needed
+
+
+def get_agent_base_url(agent: AgentServiceName) -> str:
+    """
+    Get the base URL for the given agent service name in a type-safe way.
+    :param agent: AgentServiceName enum value
+    :return: Base URL as string
+    """
+    url = settings.AGENT_ROUTES.get(str(agent))
+    if not url:
+        raise ValueError(f"No base URL configured for agent: {agent}")
+    return url
+
+
+def get_publish_base_url(publisher: PublisherServiceName) -> str:
+    """
+    Get the base URL for the given publisher service name in a type-safe way.
+    :param publisher: PublisherServiceName enum value
+    :return: Base URL as string
+    """
+    url = settings.PUBLISH_ROUTES.get(str(publisher))
+    if not url:
+        raise ValueError(f"No base URL configured for publisher: {publisher}")
+    return url 
