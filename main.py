@@ -5,18 +5,17 @@
 
 # Entry point for the discord-capture application.
 
+import discord
 from infrastructure.config.settings import settings
 
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print("DISCORD_TOKEN:", settings.DISCORD_TOKEN)
-    print("DISCORD_CLIENT_ID:", settings.DISCORD_CLIENT_ID)
-    print("GUILD_IDS:", settings.GUILD_IDS)
+    intents = discord.Intents.default()
+    client = MyClient(intents=intents)
+    client.run(settings.DISCORD_TOKEN)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
