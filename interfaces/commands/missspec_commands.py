@@ -3,6 +3,7 @@ from discord import app_commands
 from typing import List, Optional
 
 from infrastructure.config.settings import settings
+from domain.services.message_fetcher_service import MessageFetcherService
 
 
 def parse_message_ids(message_ids_str: str) -> List[int]:
@@ -44,6 +45,13 @@ def register_commands(tree: app_commands.CommandTree):
         # Get initiator info
         initiator = interaction.user
         initiator_info = f"{initiator.display_name} (ID: {initiator.id})"
+
+        # Fetch messages using MessageFetcherService
+        channel_id = interaction.channel_id
+        fetcher = MessageFetcherService(interaction.client)
+        fetched_messages = await fetcher.fetch_messages(channel_id, parsed_ids)
+        print(f"[capture] fetched messages: {[{'id': m.id, 'content': m.content, 'author': m.author_name} for m in fetched_messages]}")
+
         # Prepare playful, first-person reply message
         reply = (
             "✨ Got it! I've bottled up your spark of inspiration and sent it to my idea lab.\n\n"
