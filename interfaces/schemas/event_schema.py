@@ -26,8 +26,8 @@ def build_capture_event(
     """
     # Generate unique identifiers
     session_id = f"session-{interaction.guild_id}-{interaction.channel_id}"
-    chatmill_id = f"missspec-{interaction.guild_id}-{interaction.channel_id}-{interaction.message.id}"
-    event_id = f"evt-{interaction.guild_id}-{interaction.channel_id}-{interaction.message.id}"
+    chatmill_id = f"missspec-{interaction.guild_id}-{interaction.channel_id}-{interaction.id}"
+    event_id = f"evt-{interaction.guild_id}-{interaction.channel_id}-{interaction.id}"
 
     # Build Task payload
     task_payload = Task(

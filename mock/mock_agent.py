@@ -28,7 +28,7 @@ async def receive_capture(request: Request):
     supplement_request = await build_supplement_request_from_capture(payload)
 
     # Fire POST to main service
-    url = "http://localhost:8101/capture/discord/supplement_request"
+    url = "http://discord-capture:8101/capture/discord/supplement_request"
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(url, json=supplement_request.dict(), timeout=10)

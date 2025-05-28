@@ -13,8 +13,8 @@ async def notify_missspec_capture(event: Capture) -> None:
         httpx.HTTPError: If the HTTP request fails
         httpx.TimeoutException: If the request times out
     """
-    agent_url = get_agent_base_url(AgentServiceName.MISS_SPEC) + "/agent/missspec/capture"
-
+    agent_url = get_agent_base_url(AgentServiceName.MISS_SPEC) + "agent/missspec/capture"
+    print(agent_url)
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(

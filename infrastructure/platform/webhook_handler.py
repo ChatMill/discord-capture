@@ -37,10 +37,8 @@ async def set_webhook(name: str, channel_id: int, bot_client) -> str:
     webhooks = await channel.webhooks()
     webhook = next((wh for wh in webhooks if wh.name == name), None)
     if not webhook:
-        avatar_url = getattr(bot_client, 'avatar_url', None)
         webhook = await channel.create_webhook(
             name=name,
-            avatar=avatar_url
         )
     _webhook_cache[(name, channel_id)] = webhook.url
     return webhook.url

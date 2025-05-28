@@ -27,11 +27,11 @@ class MessageFetcherService:
                 msg = await channel.fetch_message(mid)
                 messages.append(
                     Message(
-                        message_id=msg.id,
+                        id=str(msg.id),
                         content=msg.content,
-                        author_id=msg.author.id,
+                        author_id=str(msg.author.id),
                         author_name=getattr(msg.author, 'display_name', str(msg.author)),
-                        timestamp=msg.created_at
+                        timestamp=str(msg.created_at)
                     )
                 )
             except Exception as e:

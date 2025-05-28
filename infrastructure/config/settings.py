@@ -69,7 +69,7 @@ def get_agent_base_url(agent: AgentServiceName) -> str:
     :param agent: AgentServiceName enum value
     :return: Base URL as string
     """
-    url = settings.AGENT_ROUTES.get(str(agent))
+    url = settings.AGENT_ROUTES.get(agent)
     if not url:
         raise ValueError(f"No base URL configured for agent: {agent}")
     return url
@@ -81,7 +81,7 @@ def get_publish_base_url(publisher: PublisherServiceName) -> str:
     :param publisher: PublisherServiceName enum value
     :return: Base URL as string
     """
-    url = settings.PUBLISH_ROUTES.get(str(publisher))
+    url = settings.PUBLISH_ROUTES.get(publisher)
     if not url:
         raise ValueError(f"No base URL configured for publisher: {publisher}")
     return url
