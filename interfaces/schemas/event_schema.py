@@ -50,7 +50,8 @@ def build_capture_event(
         avatar_url=getattr(interaction.client, 'avatar_url', None),
         webhook_name=WebhookName.MISSSPEC.value,
         channel_id=interaction.channel_id,
-        guild_id=interaction.guild_id
+        guild_id=interaction.guild_id,
+        agent_end="missspec"
     )
 
     # Build and return Capture event

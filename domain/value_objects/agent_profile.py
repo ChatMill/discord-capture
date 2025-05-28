@@ -10,4 +10,5 @@ class AgentProfile(BaseModel):
     webhook_name: str  # The webhook name (also used as sender name)
     channel_id: int  # The Discord channel ID for message delivery
     guild_id: int  # The Discord guild (server) ID for message delivery
-    capture_end: str = "discord"  # The capture end identifier, fixed as 'discord' 
+    capture_end: str = "discord"  # The capture end identifier, fixed as 'discord'
+    agent_end: str = "missspec"  # The agent end identifier, fixed as 'missspec' 
