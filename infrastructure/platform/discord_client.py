@@ -1,6 +1,7 @@
 import discord
 from interfaces.commands.discord_commands import register_commands
 import httpx
+from infrastructure.platform.webhook_handler import set_bot_client_instance
 
 
 class DiscordBotClient(discord.Client):
@@ -8,6 +9,7 @@ class DiscordBotClient(discord.Client):
         super().__init__(intents=intents)
         self.tree = discord.app_commands.CommandTree(self)
         self.avatar_url = None  # Cache for bot avatar URL
+        set_bot_client_instance(self)
 
     async def setup_hook(self):
         register_commands(self.tree)

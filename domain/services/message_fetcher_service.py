@@ -24,4 +24,4 @@ class MessageFetcherService:
             )
             for msg in raw_messages if msg is not None
         ]
-        return messages 
+        return messages

@@ -1,6 +1,7 @@
 import httpx
+
 from domain.events.capture import Capture
-from infrastructure.config.settings import settings, get_agent_base_url, AgentServiceName
+from infrastructure.config.settings import get_agent_base_url, AgentServiceName
 
 
 async def notify_missspec_capture(event: Capture) -> None:

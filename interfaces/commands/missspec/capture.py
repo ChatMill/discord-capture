@@ -1,11 +1,14 @@
+import asyncio
+from typing import List, Optional
+
 import discord
 from discord import app_commands
-from typing import List, Optional
-import asyncio
-from infrastructure.config.settings import settings
+
 from domain.services.message_fetcher_service import MessageFetcherService
-from interfaces.schemas.event_schema import build_capture_event
+from infrastructure.platform.discord_client import DiscordBotClient
+from infrastructure.platform.webhook_handler import WebhookName, send_webhook_message
 from interfaces.api.to_missspec.capture import notify_missspec_capture
+from interfaces.schemas.event_schema import build_capture_event
 
 
 def parse_message_ids(message_ids_str: str) -> List[int]:
@@ -20,7 +23,7 @@ def parse_message_ids(message_ids_str: str) -> List[int]:
         return []
 
 
-def register_capture_command(tree: app_commands.CommandTree):
+def register_capture_command(tree: app_commands.CommandTree, bot_client: DiscordBotClient = None):
     @tree.command(name="capture", description="Capture fleeting ideas to make spec")
     @app_commands.describe(
         message_ids="The message IDs to capture (comma separated, e.g. 123,456,789)",
@@ -71,12 +74,19 @@ def register_capture_command(tree: app_commands.CommandTree):
                 capture_event = build_capture_event(
                     interaction=interaction,
                     message_ids=parsed_ids,
-                    messages=fetched_messages
+                    messages=fetched_messages,
                 )
                 # Notify Miss Spec agent
                 await notify_missspec_capture(capture_event)
+                # After response, send a webhook message to Discord
+                await send_webhook_message(
+                    name=WebhookName.MISSSPEC,  # Used for both webhook and sender username
+                    interaction=interaction,
+                    content="Agent has received the capture event!",
+                    bot_client=interaction.client if bot_client is None else bot_client
+                )
             except Exception as e:
-                print(f"[capture] Failed to notify agent: {e}")
+                print(f"[capture] Failed to notify agent or send webhook: {e}")
 
         # Fire and forget (non-blocking)
         asyncio.create_task(notify_agent())
