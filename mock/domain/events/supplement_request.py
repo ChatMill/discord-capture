@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 from typing import List
-from mock.domain.entities.task import Task
-from mock.domain.value_objects.agent_profile import AgentProfile
-from mock.domain.entities.message import Message
+from domain.entities.task import Task
+from domain.value_objects.agent_profile import AgentProfile
+from domain.entities.message import Message
+
 
 class SupplementRequest(BaseModel):
     """

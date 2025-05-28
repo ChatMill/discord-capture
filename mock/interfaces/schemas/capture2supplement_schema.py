@@ -1,7 +1,7 @@
-from mock.domain.events.supplement_request import SupplementRequest
-from mock.domain.entities.task import Task
-from mock.domain.value_objects.agent_profile import AgentProfile
-from mock.domain.entities.message import Message
+from domain.events.supplement_request import SupplementRequest
+from domain.entities.task import Task
+from domain.value_objects.agent_profile import AgentProfile
+from domain.entities.message import Message
 import time
 import asyncio
 import random
