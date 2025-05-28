@@ -71,8 +71,7 @@ def register_capture_command(tree: app_commands.CommandTree):
                 capture_event = build_capture_event(
                     interaction=interaction,
                     message_ids=parsed_ids,
-                    messages=fetched_messages,
-                    participants=participants_list
+                    messages=fetched_messages
                 )
                 # Notify Miss Spec agent
                 await notify_missspec_capture(capture_event)

@@ -9,8 +9,7 @@ from domain.entities.message import Message
 def build_capture_event(
     interaction: discord.Interaction,
     message_ids: List[int],
-    messages: List[Message],
-    participants: Optional[List[str]] = None
+    messages: List[Message]
 ) -> Capture:
     """
     Build a Capture event from raw handler data.
@@ -18,7 +17,6 @@ def build_capture_event(
         interaction: The Discord interaction that triggered the event
         message_ids: List of message IDs to capture
         messages: List of domain Message objects
-        participants: Optional list of participant IDs
     Returns:
         Capture: A fully assembled Capture event
     """
