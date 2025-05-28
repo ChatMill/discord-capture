@@ -1,6 +1,6 @@
 from typing import List
 
-from domain.entities.payload import Payload
+from domain.entities.task import Task
 from domain.events.base_event import Event, EventType
 
 
@@ -15,7 +15,7 @@ class SupplementRequest(Event):
             session_id: str,
             event_id: str,
             operator_id: str,
-            payload: Payload,
+            payload: Task,
             history: List[str],
             question: str
     ):

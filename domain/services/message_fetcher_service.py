@@ -16,7 +16,7 @@ class MessageFetcherService:
         raw_messages = await self.discord_client.fetch_messages(channel_id, message_ids)
         messages = [
             Message(
-                id=msg.id,
+                message_id=msg.id,
                 content=msg.content,
                 author_id=msg.author.id,
                 author_name=getattr(msg.author, 'display_name', str(msg.author)),

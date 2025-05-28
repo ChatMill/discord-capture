@@ -1,7 +1,7 @@
 from typing import List
 
 from domain.entities.message import Message
-from domain.entities.payload import Payload
+from domain.entities.task import Task
 from domain.events.base_event import Event, EventType
 
 
@@ -16,7 +16,7 @@ class SupplementResponse(Event):
             session_id: str,
             event_id: str,
             operator_id: str,
-            payload: Payload,
+            payload: Task,
             history: List[str],
             supplement_messages: List[str],
             messages: List[Message]
