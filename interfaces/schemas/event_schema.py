@@ -1,5 +1,5 @@
-from typing import List
 import json
+from typing import List
 
 import discord
 
@@ -11,9 +11,9 @@ from infrastructure.platform.webhook_handler import WebhookName
 
 
 def build_capture_event(
-    interaction: discord.Interaction,
-    message_ids: List[int],
-    messages: List[Message]
+        interaction: discord.Interaction,
+        message_ids: List[int],
+        messages: List[Message]
 ) -> Capture:
     """
     Build a Capture event from raw handler data.
@@ -65,6 +65,7 @@ def build_capture_event(
         messages=messages,
         agent_profile=agent_profile
     )
+
 
 def build_discord_embed_from_supplement_request(supplement_request: dict) -> dict:
     """

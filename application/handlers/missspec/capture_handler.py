@@ -1,7 +1,8 @@
+import asyncio
+from typing import Optional
+
 from application.services.missspec.capture import handle_capture_command
 from domain.services.message_fetcher_service import MessageFetcherService
-from typing import Optional
-import asyncio
 
 
 def parse_message_ids(message_ids_str: str):

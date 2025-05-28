@@ -1,6 +1,7 @@
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-import httpx
+
 from interfaces.schemas.capture2supplement_schema import build_supplement_request_from_capture
 
 app = FastAPI()

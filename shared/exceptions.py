@@ -1,1 +1,1 @@
-# Exception definitions for shared use across the project. 
+# Exception definitions for shared use across the project.

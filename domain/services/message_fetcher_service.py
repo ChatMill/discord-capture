@@ -1,4 +1,5 @@
 from typing import List
+
 from domain.entities.message import Message
 
 
@@ -6,6 +7,7 @@ class MessageFetcherService:
     """
     Domain service for fetching and validating Discord messages.
     """
+
     def __init__(self, discord_client):
         self.discord_client = discord_client
 

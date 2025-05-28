@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
+
 
 class Task(BaseModel):
     """
@@ -17,4 +19,4 @@ class Task(BaseModel):
     priority: str
     parent_task: Optional[str] = None
     sub_tasks: List[str] = []
-    history: List[str] = [] 
+    history: List[str] = []

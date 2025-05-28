@@ -1,10 +1,11 @@
-from domain.events.supplement_request import SupplementRequest
-from domain.entities.task import Task
-from domain.value_objects.agent_profile import AgentProfile
-from domain.entities.message import Message
-import time
 import asyncio
 import random
+import time
+
+from domain.entities.message import Message
+from domain.entities.task import Task
+from domain.events.supplement_request import SupplementRequest
+from domain.value_objects.agent_profile import AgentProfile
 
 
 async def build_supplement_request_from_capture(capture_event: dict) -> SupplementRequest:
@@ -44,4 +45,4 @@ async def build_supplement_request_from_capture(capture_event: dict) -> Suppleme
         question=question,
         agent_profile=AgentProfile(**agent_profile),
         messages=[Message(**m) for m in messages]
-    ) 
+    )

@@ -1,7 +1,10 @@
 from typing import List
+
 from pydantic import BaseModel
+
 from domain.entities.task import Task
 from domain.events.base_event import Event, EventType
+
 
 class SupplementRequest(Event, BaseModel):
     """

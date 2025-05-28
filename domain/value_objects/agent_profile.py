@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 class AgentProfile(BaseModel):
     """
@@ -11,4 +13,4 @@ class AgentProfile(BaseModel):
     channel_id: int  # The Discord channel ID for message delivery
     guild_id: int  # The Discord guild (server) ID for message delivery
     capture_end: str = "discord"  # The capture end identifier, fixed as 'discord'
-    agent_end: str = "missspec"  # The agent end identifier, fixed as 'missspec' 
+    agent_end: str = "missspec"  # The agent end identifier, fixed as 'missspec'

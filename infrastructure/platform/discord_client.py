@@ -1,4 +1,5 @@
 import discord
+
 from interfaces.commands.discord_commands import register_commands
 
 

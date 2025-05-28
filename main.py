@@ -5,12 +5,14 @@
 
 # Entry point for the discord-capture application.
 
-from infrastructure.platform.discord_client import DiscordBotClient
-from infrastructure.config.settings import settings
-import discord
-from fastapi import FastAPI
 import threading
+
+import discord
 import uvicorn
+from fastapi import FastAPI
+
+from infrastructure.config.settings import settings
+from infrastructure.platform.discord_client import DiscordBotClient
 from interfaces.api.from_missspec.supplement_request import router as from_missspec_router
 
 app = FastAPI()

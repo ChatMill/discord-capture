@@ -1,8 +1,10 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
+
+from domain.entities.message import Message
 from domain.entities.task import Task
 from domain.value_objects.agent_profile import AgentProfile
-from domain.entities.message import Message
 
 
 class SupplementRequest(BaseModel):

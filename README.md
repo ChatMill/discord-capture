@@ -17,6 +17,7 @@
 本项目依赖管理仅使用 requirements.txt。依赖新增/升级时请只维护 requirements.txt 文件。
 
 安装依赖：
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -53,7 +54,9 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## 项目简介
 
-**discord-capture** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM 工具自动捕捉频道消息、命令与用户输入，并将其结构化为后续智能处理（agent 能力插件）的原始数据。该模块作为 Chatmill 全流程自动化协作的起点，支持需求捕捉、内容生成、任务拆解、反馈收集等多种场景。
+**discord-capture** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM
+工具自动捕捉频道消息、命令与用户输入，并将其结构化为后续智能处理（agent 能力插件）的原始数据。该模块作为 Chatmill
+全流程自动化协作的起点，支持需求捕捉、内容生成、任务拆解、反馈收集等多种场景。
 
 - 支持 Discord 消息监听、命令解析、Webhook 适配
 - 领域驱动设计（DDD），高内聚、易扩展
@@ -157,6 +160,7 @@ discord-capture/
 下图展示了捕获端领域层的主要实体、聚合与关系，突出结构化负载的抽象与解耦。
 
 图表说明：
+
 - 图表采用 DDD 分层架构，分为 Domain、Application、Infrastructure 和 Interfaces 四层
 - 每层包含其典型实现类，实际代码可根据需求扩展
 - 校验点分布在不同层级，确保数据完整性和业务规则
@@ -455,6 +459,7 @@ classDiagram
 ```
 
 领域模型说明：
+
 - StructuredPayload 是所有 agent 能力插件结构化负载的抽象接口，捕获端领域层只依赖该接口。
 - Task 是 Miss Spec agent 的 StructuredPayload 实现，其他 agent（如 Nudge、Echo）可有自己的实现（如 Checklist、ContentDraft）。
 - 捕获端领域事件、Session、SupplementRequest、PublishResult 等均与 StructuredPayload 关联，实现平台与业务解耦。
@@ -470,7 +475,8 @@ classDiagram
 > - Session 的 agent 字段用于策略分发，动态选择 StructuredPayload 的具体实现（如 Task、Checklist、ContentDraft）
 > - 事件流和策略分发链路通过服务和 agent 字段实现高度解耦和可扩展
 
-> Event 抽象基类统一了所有领域事件/命令的通用字段（type、session_id、message_id、operator_id、payload、history），便于事件流转、权限校验、日志追踪等通用处理。各子类仅补充自身特有字段。
+> Event
+> 抽象基类统一了所有领域事件/命令的通用字段（type、session_id、message_id、operator_id、payload、history），便于事件流转、权限校验、日志追踪等通用处理。各子类仅补充自身特有字段。
 
 ---
 
@@ -490,6 +496,7 @@ classDiagram
 Chatmill 捕获端（discord-capture）所有 API、Webhook、事件流等敏感操作均采用 JWT（JSON Web Token）认证机制，保障平台各端通信的身份可信与数据安全。
 
 ### 1. JWT 用途
+
 - 捕获端作为签发方（iss: "discord-capture"），为下游 agent、发布端等生成认证 token
 - 捕获端作为接收方（aud: "discord-capture"），校验上游/外部请求的身份与权限
 - 支持多平台、多 agent、多租户安全扩展
@@ -497,12 +504,14 @@ Chatmill 捕获端（discord-capture）所有 API、Webhook、事件流等敏感
 ### 2. JWT 字段规范
 
 #### Header
+
 | 字段名 | 说明       | 示例值         |
 |-----|----------|-------------|
 | alg | 签名算法     | HS256/RS256 |
 | typ | Token 类型 | JWT         |
 
 #### Payload
+
 | 字段名 | 说明                      | 必填  | 示例值               |
 |-----|-------------------------|-----|-------------------|
 | sub | 主题（session_id，会话唯一标识）   | 是   | "sess-001"        |
@@ -516,6 +525,7 @@ Chatmill 捕获端（discord-capture）所有 API、Webhook、事件流等敏感
 ### 3. Python 签发与验证示例
 
 #### 对称加密（HS256）
+
 ```python
 import jwt
 import time
@@ -526,7 +536,7 @@ payload = {
     "exp": int(time.time()) + 3600,  # 1小时后过期
     "iat": int(time.time()),
     "aud": "miss-spec-agent",  # 接收方唯一标识
-    "iss": "discord-capture"   # 签发方唯一标识
+    "iss": "discord-capture"  # 签发方唯一标识
 }
 token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 print(f"JWT Token: {token}")
@@ -548,6 +558,7 @@ except jwt.InvalidTokenError:
 ```
 
 #### 非对称加密（RS256）
+
 ```python
 import jwt
 from pathlib import Path
@@ -582,6 +593,7 @@ except jwt.InvalidTokenError:
 ```
 
 ### 4. 最佳实践
+
 - 所有 API、Webhook、Agent 通信必须启用 JWT 认证
 - 生产环境建议使用非对称加密（RS256），密钥分离，提升安全性
 - Token 有效期建议 1-2 小时，过期需重新签发
@@ -589,6 +601,7 @@ except jwt.InvalidTokenError:
 - 密钥/公钥应通过安全渠道分发与管理，严禁硬编码在代码仓库
 
 ### 5. 相关文档
+
 - [CML 协议与事件类型](developer/CML_PROTOCOL.md)
 - [平台适配与配置](deployment/PLATFORM_ADAPTERS.md)
 - [架构与分层设计](developer/ARCHITECTURE.md)

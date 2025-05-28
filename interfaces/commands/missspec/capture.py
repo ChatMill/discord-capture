@@ -1,11 +1,8 @@
-import asyncio
 from typing import List, Optional
 
 import discord
 from discord import app_commands
 
-from domain.services.message_fetcher_service import MessageFetcherService
-from infrastructure.platform.discord_client import DiscordBotClient
 from application.handlers.missspec.capture_handler import capture_handler
 
 

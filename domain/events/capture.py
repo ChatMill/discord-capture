@@ -1,7 +1,9 @@
 from typing import List
+
 from pydantic import BaseModel
-from domain.entities.task import Task
+
 from domain.entities.message import Message
+from domain.entities.task import Task
 from domain.events.base_event import Event, EventType
 from domain.value_objects.agent_profile import AgentProfile
 

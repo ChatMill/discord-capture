@@ -1,8 +1,9 @@
-from pydantic_settings import BaseSettings
-from pydantic import Field, validator
-from typing import Optional, List, Dict
 import json
 from enum import Enum
+from typing import List, Dict
+
+from pydantic import Field, validator
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -11,7 +12,8 @@ class Settings(BaseSettings):
     """
     MISS_SPEC_DISCORD_TOKEN: str = Field(..., description="Miss Spec Discord Bot Token")
     MISS_SPEC_CLIENT_ID: str = Field(..., description="Miss Spec Discord Bot Client ID")
-    MISS_SPEC_GUILD_IDS: List[int] = Field(default_factory=list, description="List of Miss Spec Discord Guild (Server) IDs to listen to")
+    MISS_SPEC_GUILD_IDS: List[int] = Field(default_factory=list,
+                                           description="List of Miss Spec Discord Guild (Server) IDs to listen to")
     AGENT_ROUTES: Dict[str, str] = Field(default_factory=dict, description="Agent webhook routes mapping")
     PUBLISH_ROUTES: Dict[str, str] = Field(default_factory=dict, description="Publish endpoint routes mapping")
     MAX_MESSAGE_FETCH_COUNT: int = Field(default=25, description="Max messages to fetch per request")
@@ -54,10 +56,10 @@ class AgentServiceName(str, Enum):
 
 
 class PublisherServiceName(str, Enum):
-    GITHUB = "github"        # GitHub publisher
-    NOTION = "notion"        # Notion publisher
-    CONFLUENCE = "confluence" # Confluence publisher
-    FEISHU = "feishu"        # Feishu publisher
+    GITHUB = "github"  # GitHub publisher
+    NOTION = "notion"  # Notion publisher
+    CONFLUENCE = "confluence"  # Confluence publisher
+    FEISHU = "feishu"  # Feishu publisher
     # Add more publisher service names as needed
 
 
@@ -82,4 +84,4 @@ def get_publish_base_url(publisher: PublisherServiceName) -> str:
     url = settings.PUBLISH_ROUTES.get(str(publisher))
     if not url:
         raise ValueError(f"No base URL configured for publisher: {publisher}")
-    return url 
+    return url

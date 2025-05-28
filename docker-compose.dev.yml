@@ -10,7 +10,7 @@ services:
       - .env
     volumes:
       - .:/app
-    command: ["python", "main.py"]
+    command: [ "python", "main.py" ]
     ports:
       - "8101:8101"
     depends_on:
@@ -22,7 +22,7 @@ services:
       context: ./mock
       dockerfile: Dockerfile.mock
     container_name: mock-agent
-    command: ["python", "mock_agent.py"]
+    command: [ "python", "mock_agent.py" ]
     ports:
       - "8201:8201"
 
@@ -31,6 +31,6 @@ services:
       context: ./mock
       dockerfile: Dockerfile.mock
     container_name: mock-publish
-    command: ["python", "mock_publish.py"]
+    command: [ "python", "mock_publish.py" ]
     ports:
       - "8301:8301" 

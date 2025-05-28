@@ -1,7 +1,9 @@
-from typing import Dict, Optional
-import discord
 from enum import Enum
+from typing import Dict, Optional
+
+import discord
 import httpx
+
 from domain.value_objects.agent_profile import AgentProfile
 
 
@@ -58,9 +60,9 @@ async def get_webhook_url(name: str, channel_id: int) -> Optional[str]:
 
 
 async def send_webhook_message(
-    agent_profile: AgentProfile,
-    content: str = "",
-    embeds: list = None
+        agent_profile: AgentProfile,
+        content: str = "",
+        embeds: list = None
 ):
     """
     Send a message to a Discord channel via webhook, using AgentProfile for all context.

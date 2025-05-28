@@ -1,10 +1,13 @@
+import logging
+
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-import logging
-from interfaces.schemas.event_schema import build_discord_embed_from_supplement_request
+
 from infrastructure.platform.webhook_handler import send_webhook_message
+from interfaces.schemas.event_schema import build_discord_embed_from_supplement_request
 
 router = APIRouter()
+
 
 @router.post("/capture/discord/supplement_request")
 async def receive_supplement_request(request: Request):

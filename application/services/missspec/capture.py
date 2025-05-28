@@ -1,8 +1,6 @@
-import asyncio
-from interfaces.schemas.event_schema import build_capture_event
-from interfaces.api.to_missspec.capture import notify_missspec_capture
 from infrastructure.platform.webhook_handler import get_webhook_url, set_webhook, send_webhook_message
-from domain.value_objects.agent_profile import AgentProfile
+from interfaces.api.to_missspec.capture import notify_missspec_capture
+from interfaces.schemas.event_schema import build_capture_event
 
 
 async def handle_capture_command(interaction, message_ids, fetched_messages):
