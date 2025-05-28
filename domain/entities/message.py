@@ -1,13 +1,11 @@
-from dataclasses import dataclass
-from typing import Any
-
-@dataclass
 class Message:
     """
-    Domain entity representing a Discord message.
+    Domain entity representing a Discord message, including author id and name.
     """
-    id: int
-    content: str
-    author_id: int
-    author_name: str
-    timestamp: Any  # Can be datetime or str, depending on usage 
+
+    def __init__(self, message_id: str, author_id: str, author_name: str, content: str, timestamp: str):
+        self.id = message_id
+        self.author_id = author_id
+        self.author_name = author_name
+        self.content = content
+        self.timestamp = timestamp
