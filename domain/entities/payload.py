@@ -1,12 +1,11 @@
-from abc import ABC
 from typing import List, Optional
+from pydantic import BaseModel
 
 
-class Payload(ABC):
+class Payload(BaseModel):
     """
     Abstract base class for all payloads handled by agents.
     """
-
-    def __init__(self, external_id: Optional[str], message_ids: List[str]):
-        self.external_id = external_id
-        self.message_ids = message_ids
+    chatmill_id: str
+    external_id: Optional[str]
+    message_ids: List[str]
