@@ -1,8 +1,8 @@
-from typing import Dict
+from typing import Dict, Optional
 import discord
 from enum import Enum
-from infrastructure.platform.discord_client import DiscordBotClient
 import httpx
+from domain.value_objects.agent_profile import AgentProfile
 
 
 class WebhookName(str, Enum):
@@ -17,7 +17,7 @@ class WebhookName(str, Enum):
 _webhook_cache: Dict[tuple, str] = {}
 
 
-async def set_webhook(name: str, channel_id: int, bot_client: DiscordBotClient) -> str:
+async def set_webhook(name: str, channel_id: int, bot_client) -> str:
     """
     Create and cache a Discord webhook for the given name and channel if not already cached.
     Args:
@@ -44,60 +44,49 @@ async def set_webhook(name: str, channel_id: int, bot_client: DiscordBotClient) 
     return webhook.url
 
 
-async def get_webhook_url(name: str, channel_id: int) -> str:
+async def get_webhook_url(name: str, channel_id: int) -> Optional[str]:
     """
-    Get a Discord webhook URL by name and channel_id from cache. Raise if not found.
+    Get a Discord webhook URL by name and channel_id from cache. Return None if not found.
     Args:
         name: The webhook name
         channel_id: The Discord channel ID
     Returns:
-        The webhook URL as a string
-    Raises:
-        KeyError: If the webhook is not cached
+        The webhook URL as a string, or None if not found
     """
     key = (name, channel_id)
-    if key in _webhook_cache:
-        return _webhook_cache[key]
-    raise KeyError(f"Webhook for name={name} and channel_id={channel_id} not found in cache. Please call set_webhook "
-                   f"first.")
+    return _webhook_cache.get(key)
 
 
 async def send_webhook_message(
-    name: WebhookName,
-    interaction: discord.Interaction,
-    content: str,
-    avatar_url: str = None,
-    bot_client: DiscordBotClient = None
+    agent_profile: AgentProfile,
+    content: str = "",
+    embeds: list = None
 ):
     """
-    Send a message to a Discord channel via webhook, using the same name for both webhook and sender username.
+    Send a message to a Discord channel via webhook, using AgentProfile for all context.
     Args:
-        name: The webhook name (WebhookName enum, also used as sender username)
-        interaction: The Discord interaction object (provides channel_id and client)
-        content: The message content to send
-        avatar_url: The avatar URL to use for the sender (optional)
-        bot_client: DiscordBotClient instance (optional, defaults to interaction.client)
+        agent_profile: AgentProfile value object (must include webhook_name, channel_id, avatar_url, etc.)
+        content: The message content to send (optional)
+        embeds: List of Discord embed dicts (optional)
+    Raises:
+        Exception: If webhook does not exist for the given name and channel_id
     """
-    channel_id = interaction.channel_id
-    client = bot_client if bot_client is not None else interaction.client
+    webhook_name = agent_profile.webhook_name
+    channel_id = agent_profile.channel_id
+    avatar_url = agent_profile.avatar_url
+    # Only try to get webhook URL, do not auto-create
+    webhook_url = await get_webhook_url(webhook_name, channel_id)
+    payload = {
+        "username": webhook_name,
+        "avatar_url": avatar_url,
+    }
+    if content:
+        payload["content"] = content
+    if embeds:
+        payload["embeds"] = embeds
     try:
-        # Try to get webhook URL from cache, otherwise create it
-        try:
-            webhook_url = await get_webhook_url(name, channel_id)
-        except KeyError:
-            webhook_url = await set_webhook(name, channel_id, client)
-        # Use bot avatar if not provided
-        if avatar_url is None and hasattr(client, "avatar_url"):
-            avatar_url = getattr(client, "avatar_url", None)
-        payload = {
-            "content": content,
-            "username": name,
-        }
-        if avatar_url:
-            payload["avatar_url"] = avatar_url
-        async with httpx.AsyncClient() as http_client:
-            response = await http_client.post(webhook_url, json=payload, timeout=10)
-            response.raise_for_status()
-        print(f"[send_webhook_message] Sent webhook message as {name}")
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(webhook_url, json=payload, timeout=10)
+            print(f"[send_webhook_message] Sent webhook message as {webhook_name}, status={resp.status_code}")
     except Exception as e:
         print(f"[send_webhook_message] Failed to send webhook message: {e}")

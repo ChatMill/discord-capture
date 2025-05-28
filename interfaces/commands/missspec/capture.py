@@ -6,9 +6,7 @@ from discord import app_commands
 
 from domain.services.message_fetcher_service import MessageFetcherService
 from infrastructure.platform.discord_client import DiscordBotClient
-from infrastructure.platform.webhook_handler import WebhookName, send_webhook_message
-from interfaces.api.to_missspec.capture import notify_missspec_capture
-from interfaces.schemas.event_schema import build_capture_event
+from application.handlers.missspec.capture_handler import capture_handler
 
 
 def parse_message_ids(message_ids_str: str) -> List[int]:
@@ -23,7 +21,7 @@ def parse_message_ids(message_ids_str: str) -> List[int]:
         return []
 
 
-def register_capture_command(tree: app_commands.CommandTree, bot_client: DiscordBotClient = None):
+def register_capture_command(tree: app_commands.CommandTree):
     @tree.command(name="capture", description="Capture fleeting ideas to make spec")
     @app_commands.describe(
         message_ids="The message IDs to capture (comma separated, e.g. 123,456,789)",
@@ -37,56 +35,7 @@ def register_capture_command(tree: app_commands.CommandTree, bot_client: Discord
         """
         Handle the /capture slash command for Miss Spec. Parses message_ids and participants, and replies with the parsed info.
         """
-        # Parse message_ids
-        parsed_ids = parse_message_ids(message_ids)
-        # Parse participants as a comma-separated string
-        if participants:
-            participants_list = [p.strip() for p in participants.split(',') if p.strip()]
-        else:
-            participants_list = []
-        # Get initiator info
-        initiator = interaction.user
-        initiator_info = f"{initiator.display_name} (ID: {initiator.id})"
-
-        # Fetch messages using MessageFetcherService
-        channel_id = interaction.channel_id
-        fetcher = MessageFetcherService(interaction.client)
-        fetched_messages = await fetcher.fetch_messages(channel_id, parsed_ids)
-        print(
-            f"[capture] fetched messages: {[{'id': m.id, 'content': m.content, 'author': m.author_name} for m in fetched_messages]}")
-
-        # Prepare playful, first-person reply message
-        reply = (
-            "✨ Got it! I've bottled up your spark of inspiration and sent it to my idea lab.\n\n"
-            "Here's what I've captured:\n"
-            f"• Message IDs: {parsed_ids}\n"
-            f"• Participants: {participants_list if participants_list else 'None'}\n"
-            f"• Initiator: {initiator_info}\n\n"
-            "I'm pondering your ideas... I'll get back to you once my creative gears finish turning! 🧠💡"
+        # --- Delegate to handler, return reply ---
+        await interaction.response.send_message(
+            await capture_handler(interaction, message_ids, participants)
         )
-        print(f"[capture] message_ids={parsed_ids}, participants={participants_list}, initiator={initiator_info}")
-        await interaction.response.send_message(reply)
-
-        # --- Asynchronously notify agent mock service via HTTP POST ---
-        async def notify_agent():
-            try:
-                # Build Capture event using schema factory
-                capture_event = build_capture_event(
-                    interaction=interaction,
-                    message_ids=parsed_ids,
-                    messages=fetched_messages,
-                )
-                # Notify Miss Spec agent
-                await notify_missspec_capture(capture_event)
-                # After response, send a webhook message to Discord
-                await send_webhook_message(
-                    name=WebhookName.MISSSPEC,  # Used for both webhook and sender username
-                    interaction=interaction,
-                    content="Agent has received the capture event!",
-                    bot_client=interaction.client if bot_client is None else bot_client
-                )
-            except Exception as e:
-                print(f"[capture] Failed to notify agent or send webhook: {e}")
-
-        # Fire and forget (non-blocking)
-        asyncio.create_task(notify_agent())

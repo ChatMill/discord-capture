@@ -1,4 +1,5 @@
 from typing import List
+import json
 
 import discord
 
@@ -64,3 +65,32 @@ def build_capture_event(
         messages=messages,
         agent_profile=agent_profile
     )
+
+def build_discord_embed_from_supplement_request(supplement_request: dict) -> dict:
+    """
+    Build a Discord Embed payload from a SupplementRequest dict.
+    All fields (including nested) are echoed as embed fields.
+    Args:
+        supplement_request: The SupplementRequest as dict
+    Returns:
+        dict: Discord embed payload
+    """
+    embed = {
+        "title": "Supplement Request",
+        "description": supplement_request.get("question", ""),
+        "fields": [],
+        "footer": {
+            "text": f"event_type: {supplement_request.get('event_type', '')} | session_id: {supplement_request.get('session_id', '')} | event_id: {supplement_request.get('event_id', '')}"
+        }
+    }
+    # Add all top-level fields except question/event_type/session_id/event_id (已在其他位置展示)
+    skip_keys = {"question", "event_type", "session_id", "event_id"}
+    for k, v in supplement_request.items():
+        if k in skip_keys:
+            continue
+        if isinstance(v, (dict, list)):
+            v_str = json.dumps(v, ensure_ascii=False, indent=2)
+        else:
+            v_str = str(v)
+        embed["fields"].append({"name": k, "value": v_str[:1024], "inline": False})
+    return embed

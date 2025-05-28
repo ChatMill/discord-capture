@@ -11,8 +11,10 @@ import discord
 from fastapi import FastAPI
 import threading
 import uvicorn
+from interfaces.api.from_missspec.supplement_request import router as from_missspec_router
 
 app = FastAPI()
+app.include_router(from_missspec_router)
 
 
 @app.get("/health")
