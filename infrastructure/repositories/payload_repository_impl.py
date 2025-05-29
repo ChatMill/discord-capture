@@ -10,9 +10,13 @@ class PayloadRepositoryImpl(PayloadRepository):
         self.collection = db["payloads"]
 
     async def insert(self, payload: Dict[str, Any]) -> Any:
-        """Insert a payload document into MongoDB."""
-        result = await self.collection.insert_one(payload)
-        return result.inserted_id
+        """Upsert a payload document by chatmill_id into MongoDB."""
+        result = await self.collection.update_one(
+            {"chatmill_id": payload["chatmill_id"]},
+            {"$set": payload},
+            upsert=True
+        )
+        return result.upserted_id or payload["chatmill_id"]
 
     async def find(self, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find a payload document by query in MongoDB."""

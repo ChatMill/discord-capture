@@ -12,9 +12,13 @@ class EventRepositoryImpl(EventRepository):
         self.collection = db["events"]
 
     async def insert(self, event: Dict[str, Any]) -> Any:
-        """Insert an event document into MongoDB."""
-        result = await self.collection.insert_one(event)
-        return result.inserted_id
+        """Upsert an event document by event_id into MongoDB."""
+        result = await self.collection.update_one(
+            {"event_id": event["event_id"]},
+            {"$set": event},
+            upsert=True
+        )
+        return result.upserted_id or event["event_id"]
 
     async def find(self, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find an event document by query in MongoDB."""
