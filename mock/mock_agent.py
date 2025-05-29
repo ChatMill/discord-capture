@@ -1,5 +1,5 @@
 import httpx
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 
 from interfaces.schemas.capture2supplement_schema import build_supplement_request_from_capture
@@ -20,23 +20,28 @@ async def agent_webhook(request: Request):
 
 
 @app.post("/agent/missspec/capture")
-async def receive_capture(request: Request):
+async def receive_capture(request: Request, background_tasks: BackgroundTasks):
     payload = await request.json()
     print("[mock_agent] Received Miss Spec capture event:", payload)
 
-    # Build SupplementRequest using schema logic (async)
-    supplement_request = await build_supplement_request_from_capture(payload)
+    # Immediately reply
+    response = JSONResponse(content={"status": "received"}, status_code=200)
 
-    # Fire POST to main service
-    url = "http://discord-capture:8101/capture/discord/supplement_request"
-    try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(url, json=supplement_request.dict(), timeout=10)
-            print(f"[mock_agent] Fired supplement_request, status={resp.status_code}, resp={resp.text}")
-    except Exception as e:
-        print(f"[mock_agent] Failed to fire supplement_request: {e}")
+    # Background task: build and send supplement_request after sleep
+    async def process_and_send():
+        supplement_request = await build_supplement_request_from_capture(payload)
+        import asyncio
+        await asyncio.sleep(1.0)  # Simulate AI delay
+        url = "http://discord-capture:8101/capture/discord/supplement_request"
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, json=supplement_request.dict(), timeout=10)
+                print(f"[mock_agent] Fired supplement_request, status={resp.status_code}, resp={resp.text}")
+        except Exception as e:
+            print(f"[mock_agent] Failed to fire supplement_request: {e}")
 
-    return JSONResponse(content={"status": "received"}, status_code=200)
+    background_tasks.add_task(process_and_send)
+    return response
 
 
 if __name__ == "__main__":
