@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from infrastructure.platform.webhook_handler import send_webhook_message
-from interfaces.schemas.event_schema import build_discord_embeds_from_supplement_request
+from interfaces.schemas.supplement_request_embeds_schema import build_discord_embeds_from_supplement_request
 
 router = APIRouter()
 

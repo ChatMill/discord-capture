@@ -1,30 +1,23 @@
 from infrastructure.platform.webhook_handler import get_webhook_url, set_webhook, send_webhook_message
 from interfaces.api.to_missspec.capture import notify_missspec_capture
-from interfaces.schemas.event_schema import build_capture_event
 
 
-async def handle_capture_command(interaction, message_ids, fetched_messages):
+async def handle_capture_command(interaction, event):
     """
-    Orchestrate the full MissSpec capture business flow: build event, notify agent, echo webhook.
+    Orchestrate the MissSpec capture business flow: notify agent and echo webhook.
     Args:
         interaction: discord.Interaction
-        message_ids: List[int]
-        fetched_messages: List[Message]
+        event: Pre-built event object (e.g., Capture)
     """
-    # Build Capture event
-    capture_event = build_capture_event(
-        interaction=interaction,
-        message_ids=message_ids,
-        messages=fetched_messages,
-    )
     # Notify Miss Spec agent
-    await notify_missspec_capture(capture_event)
+    await notify_missspec_capture(event)
     # After response, send a webhook message to Discord
-    agent_profile = capture_event.agent_profile
+    agent_profile = event.agent_profile
     webhook_url = await get_webhook_url(agent_profile.webhook_name, agent_profile.channel_id)
     if webhook_url is None:
         await set_webhook(agent_profile.webhook_name, agent_profile.channel_id, interaction.client)
     await send_webhook_message(
         agent_profile=agent_profile,
-        content='🚀 Whoosh! Your capture just landed in my creative workshop. I\'m processing it faster than you can say "Miss Spec"! Stay tuned for the magic!'
+        content='🚀 Whoosh! Your capture just landed in my creative workshop. '
+                'I\'m processing it faster than you can say "Miss Spec"! Stay tuned for the magic!'
     )
