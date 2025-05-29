@@ -22,4 +22,3 @@ class Task(Payload, BaseModel):
     priority: Optional[str] = None
     parent_task: Optional[str] = None
     sub_tasks: List['Task'] = []
-    history: List[str] = []

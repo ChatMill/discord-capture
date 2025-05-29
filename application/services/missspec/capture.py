@@ -26,5 +26,5 @@ async def handle_capture_command(interaction, message_ids, fetched_messages):
         await set_webhook(agent_profile.webhook_name, agent_profile.channel_id, interaction.client)
     await send_webhook_message(
         agent_profile=agent_profile,
-        content="Agent has received the capture event!"
+        content='🚀 Whoosh! Your capture just landed in my creative workshop. I\'m processing it faster than you can say "Miss Spec"! Stay tuned for the magic!'
     )
