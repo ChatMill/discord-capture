@@ -1,7 +1,5 @@
 from infrastructure.platform.webhook_handler import get_webhook_url, set_webhook, send_webhook_message
 from interfaces.api.to_missspec.capture import notify_missspec_capture
-import asyncio
-import httpx
 from application.services.feedback_utils import agent_response_with_retry
 
 # User-facing feedback messages (for maintainability and i18n)
