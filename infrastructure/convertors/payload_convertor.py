@@ -1,11 +1,22 @@
+from abc import ABC, abstractmethod
 from domain.entities.payload import Payload
 from infrastructure.persistence.payload_document import PayloadDocument
 
-class PayloadConvertor:
+class PayloadConvertor(ABC):
     """
     Factory for converting between domain Payload and persistence PayloadDocument.
     This ensures the domain model remains pure and decoupled from storage concerns.
     """
+    @staticmethod
+    @abstractmethod
+    def to_entity(doc, payload_cls):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def to_document(payload):
+        pass
+
     @staticmethod
     def to_document(payload: Payload) -> PayloadDocument:
         """
@@ -24,4 +35,13 @@ class PayloadConvertor:
         Convert a persistence PayloadDocument to a domain Payload.
         Requires the payload class to be provided.
         """
-        return payload_cls(id=doc.payload_id, **doc.data) 
+        data = dict(doc.data)
+        if 'chatmill_id' not in data:
+            data['chatmill_id'] = doc.payload_id
+        # 兼容 Task 必填字段
+        if payload_cls.__name__ == 'Task':
+            if 'title' not in data:
+                data['title'] = 'unknown'
+            if 'description' not in data:
+                data['description'] = ''
+        return payload_cls(id=doc.payload_id, **data) 

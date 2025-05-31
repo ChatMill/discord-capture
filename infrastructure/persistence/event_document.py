@@ -13,4 +13,5 @@ class EventDocument(BaseModel):
     payload_id: str
     message_ids: List[str]
     agent_profile: dict  # Can be further normalized if needed
-    event_type: str 
+    event_type: str
+    agent: str = "" 

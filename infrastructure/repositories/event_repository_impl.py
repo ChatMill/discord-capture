@@ -6,6 +6,7 @@ from infrastructure.persistence.event_document import EventDocument
 from infrastructure.convertors.event_convertor import EventConvertor
 from infrastructure.persistence.payload_document import PayloadDocument
 from infrastructure.convertors.payload_convertor import PayloadConvertor
+from infrastructure.convertors.task_convertor import TaskConvertor
 from infrastructure.persistence.message_document import MessageDocument
 from infrastructure.convertors.message_convertor import MessageConvertor
 from domain.entities.payload import Payload
@@ -46,12 +47,17 @@ class EventRepositoryImpl(EventRepository):
         if not doc_dict:
             return None
         doc = EventDocument(**doc_dict)
-        # 加载 payload
+        # 加载 payload，动态选择 convertor
         payload_doc_dict = await self.payload_collection.find_one({"payload_id": doc.payload_id})
         if not payload_doc_dict:
             return None
         payload_doc = PayloadDocument(**payload_doc_dict)
-        payload = PayloadConvertor.to_entity(payload_doc, Payload)
+        # 动态选择 agent 类型
+        agent = getattr(doc, 'agent', 'missspec')
+        if agent == 'missspec':
+            payload = TaskConvertor.to_entity(payload_doc)
+        else:
+            payload = PayloadConvertor.to_entity(payload_doc, Payload)
         # 加载 messages
         messages = []
         for mid in doc.message_ids:

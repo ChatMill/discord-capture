@@ -27,3 +27,4 @@ class Event(BaseModel):
     operator_id: str
     payload: Payload
     history: List[str]
+    agent: str = "missspec"

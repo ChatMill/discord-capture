@@ -21,3 +21,4 @@ class Capture(Event, BaseModel):
     messages: List[Message]
     agent_profile: AgentProfile  # Profile info for webhook echoing (avatar, webhook name, channel, guild)
     event_type: EventType = EventType.CAPTURE
+    agent: str = "missspec"
