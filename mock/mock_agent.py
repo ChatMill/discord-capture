@@ -1,10 +1,12 @@
 import httpx
 from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import JSONResponse
 
 from interfaces.schemas.capture2supplement_schema import build_supplement_request_from_capture
+from shared.agent_response import AgentResponse
 
 app = FastAPI()
+
+fail_count = 0  # Global counter for simulating failures
 
 
 @app.get("/health")
@@ -24,8 +26,8 @@ async def receive_capture(request: Request, background_tasks: BackgroundTasks):
     payload = await request.json()
     print("[mock_agent] Received Miss Spec capture event:", payload)
 
-    # Immediately reply
-    response = JSONResponse(content={"status": "received"}, status_code=200)
+    # Immediately reply with AgentResponse (success)
+    response = AgentResponse(success=True, error=None, data={"status": "received"})
 
     # Background task: build and send supplement_request after sleep
     async def process_and_send():
@@ -41,7 +43,7 @@ async def receive_capture(request: Request, background_tasks: BackgroundTasks):
             print(f"[mock_agent] Failed to fire supplement_request: {e}")
 
     background_tasks.add_task(process_and_send)
-    return response
+    return response.dict()
 
 
 if __name__ == "__main__":
