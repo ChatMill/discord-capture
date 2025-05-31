@@ -5,7 +5,8 @@ from typing import List
 
 def build_discord_embeds_from_supplement_request(supplement_request: dict) -> List[discord.Embed]:
     """
-    Build a list of visually appealing Discord Embed objects from a SupplementRequest dict, splitting content into multiple themed embeds.
+    Build a list of Discord Embed objects from a SupplementRequest dict.
+    Only includes Supplement Request and Task Info cards.
     Returns: List[discord.Embed]
     """
     embeds = []
@@ -36,29 +37,4 @@ def build_discord_embeds_from_supplement_request(supplement_request: dict) -> Li
         task_str = "\n".join([f"• **{k}**: {v}" for k, v in task.items()])
         task_embed.description = task_str
         embeds.append(task_embed)
-    # 3. 消息历史
-    messages = supplement_request.get("messages", [])
-    if messages:
-        msg_embed = discord.Embed(
-            title="💬 Messages",
-            color=discord.Color.green()
-        )
-        msg_str = "\n".join([
-            f"> **{m.get('author_name', '')}** [{m.get('timestamp', '')[:19].replace('T', ' ')}]: {m.get('content', '')}"
-            for m in messages
-        ])
-        msg_embed.description = msg_str
-        embeds.append(msg_embed)
-    # 4. 其他字段
-    skip_keys = {"question", "event_type", "session_id", "event_id", "task", "payload", "agent_profile", "messages"}
-    other_fields = [(k, v) for k, v in supplement_request.items() if k not in skip_keys]
-    if other_fields:
-        other_embed = discord.Embed(
-            title="🔹 Other Info",
-            color=discord.Color.orange()
-        )
-        for k, v in other_fields:
-            v_str = json.dumps(v, ensure_ascii=False, indent=2) if isinstance(v, (dict, list)) else str(v)
-            other_embed.add_field(name=k, value=v_str[:1024], inline=False)
-        embeds.append(other_embed)
     return embeds

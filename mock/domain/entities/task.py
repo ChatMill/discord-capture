@@ -19,4 +19,3 @@ class Task(BaseModel):
     priority: str
     parent_task: Optional[str] = None
     sub_tasks: List[str] = []
-    history: List[str] = []
