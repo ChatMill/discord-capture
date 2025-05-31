@@ -104,7 +104,8 @@ def test_to_entity():
         payload_id="pid",
         message_ids=["m1", "m2"],
         agent_profile=build_agent_profile().dict(),
-        event_type="capture"
+        event_type="capture",
+        agent="missspec"
     )
     payload = build_task("pid")
     messages = [build_message("m1"), build_message("m2")]

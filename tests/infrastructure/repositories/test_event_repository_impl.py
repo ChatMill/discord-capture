@@ -21,6 +21,8 @@ class DummyEventDoc:
 class DummyPayloadDoc:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+        # 模拟真实 PayloadDocument 的 data 字段
+        self.data = {"title": "t", "description": "d", "chatmill_id": "p1", "message_ids": ["m1", "m2"]}
     payload_id = "p1"
 
 class DummyPayload:
