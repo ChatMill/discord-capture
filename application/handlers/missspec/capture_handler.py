@@ -7,6 +7,7 @@ from interfaces.schemas.source_schema import build_source
 from interfaces.schemas.payload_schema import build_task_payload
 from interfaces.schemas.event_schema import build_capture_event
 from interfaces.schemas.session_schema import build_session
+from domain.services.capture_message_validator import CaptureMessageValidator
 
 # Assume repositories are imported and available
 from infrastructure.repositories.session_repository_impl import SessionRepositoryImpl
@@ -47,18 +48,27 @@ async def capture_handler(interaction, message_ids: str, participants: Optional[
     Handler for MissSpec capture command.
     Parses/validates parameters, fetches messages, assembles domain objects, stores them, and calls service.
     """
-    parsed_ids = parse_message_ids(message_ids)
+    parsed_ids = parse_message_ids(message_ids)  # List[int]
     participants_list = parse_participants(participants)
     channel_id = interaction.channel_id
     fetcher = MessageFetcherService(interaction.client)
-    fetched_messages = await fetcher.fetch_messages(channel_id, parsed_ids)
+
+    # 使用 CaptureMessageValidator 处理 message ids（全部用 str 参与 fetch，后续还原 int）
+    str_ids = [str(mid) for mid in parsed_ids]
+    fetched_messages, not_found_str_ids = await CaptureMessageValidator.fetch_and_validate(
+        str_ids, fetcher, channel_id
+    )
+    deduped_ids = CaptureMessageValidator.deduplicate_message_ids(str_ids)
+    deduped_int_ids = [int(mid) for mid in deduped_ids]
+    not_found_ids = [int(mid) for mid in not_found_str_ids]
+    found_ids = [int(m.id) for m in fetched_messages]
 
     # 生成 session_id
     session_id = f"session-{interaction.guild_id}-{interaction.channel_id}-{interaction.id}"
 
-    # Assemble domain objects
-    source = build_source(interaction, parsed_ids, participants_list)
-    task = build_task_payload(interaction, parsed_ids)
+    # Assemble domain objects（只用 fetch 到的消息 id）
+    source = build_source(interaction, found_ids, participants_list)
+    task = build_task_payload(interaction, found_ids)
     event = build_capture_event(
         interaction=interaction,
         messages=fetched_messages,
@@ -76,10 +86,12 @@ async def capture_handler(interaction, message_ids: str, participants: Optional[
     initiator = interaction.user
     initiator_info = f"{initiator.display_name} (ID: {initiator.id})"
 
+    not_found_msg = CaptureMessageValidator.format_not_found_message([str(mid) for mid in not_found_ids])
     reply = (
         "✨ Got it! I've bottled up your spark of inspiration and sent it to my idea lab.\n\n"
         "Here's what I've captured:\n"
-        f"• Message IDs: {parsed_ids}\n"
+        f"• Message IDs: {deduped_int_ids}\n"
+        f"{not_found_msg}"
         f"• Participants: {participants_list if participants_list else 'None'}\n"
         f"• Initiator: {initiator_info}\n\n"
         "I'm pondering your ideas... I'll get back to you once my creative gears finish turning! 🧠💡"
