@@ -53,15 +53,19 @@ async def capture_handler(interaction, message_ids: str, participants: Optional[
     fetcher = MessageFetcherService(interaction.client)
     fetched_messages = await fetcher.fetch_messages(channel_id, parsed_ids)
 
+    # 生成 session_id
+    session_id = f"session-{interaction.guild_id}-{interaction.channel_id}-{interaction.id}"
+
     # Assemble domain objects
     source = build_source(interaction, parsed_ids, participants_list)
     task = build_task_payload(interaction, parsed_ids)
     event = build_capture_event(
         interaction=interaction,
         messages=fetched_messages,
-        task=task
+        task=task,
+        session_id=session_id
     )
-    session = build_session(source, task, event)
+    session = build_session(source, task, event, session_id=session_id)
 
     # Store all domain objects in MongoDB
     await session_repo.insert(session.dict())

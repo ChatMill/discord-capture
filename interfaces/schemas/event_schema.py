@@ -13,7 +13,8 @@ from infrastructure.platform.webhook_handler import WebhookName
 def build_capture_event(
         interaction: discord.Interaction,
         messages: List[Message],
-        task: Task
+        task: Task,
+        session_id: str
 ) -> Capture:
     """
     Build a Capture event from raw handler data and a pre-built task (payload).
@@ -21,6 +22,7 @@ def build_capture_event(
         interaction: The Discord interaction that triggered the event
         messages: List of domain Message objects
         task: The pre-built Task (payload) object
+        session_id: The session id to use for the event
     Returns:
         Capture: A fully assembled Capture event
     """
@@ -38,6 +40,7 @@ def build_capture_event(
 
     # Build and return Capture event
     return Capture(
+        session_id=session_id,
         event_id=event_id,
         operator_id=str(interaction.user.id),
         payload=task,

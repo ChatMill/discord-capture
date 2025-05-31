@@ -2,10 +2,12 @@ from typing import Any, Dict, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from domain.repositories.session_repository import SessionRepository
 
+
 class SessionRepositoryImpl(SessionRepository):
     """
-    MongoDB implementation of SessionRepository using motor.
+    MongoDB's implementation of SessionRepository using motor.
     """
+
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db["sessions"]
 
@@ -20,4 +22,4 @@ class SessionRepositoryImpl(SessionRepository):
 
     async def find(self, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find a session document by query in MongoDB."""
-        return await self.collection.find_one(query) 
+        return await self.collection.find_one(query)
