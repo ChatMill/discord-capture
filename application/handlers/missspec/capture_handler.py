@@ -68,10 +68,10 @@ async def capture_handler(interaction, message_ids: str, participants: Optional[
     session = build_session(source, task, event, session_id=session_id)
 
     # Store all domain objects in MongoDB
-    await session_repo.insert(session.dict())
-    await payload_repo.insert(task.dict())
-    await event_repo.insert(event.dict())
-    await asyncio.gather(*(message_repo.insert(m.dict()) for m in fetched_messages))
+    await session_repo.insert(session)
+    await payload_repo.insert(task)
+    await event_repo.insert(event)
+    await asyncio.gather(*(message_repo.insert(m) for m in fetched_messages))
 
     initiator = interaction.user
     initiator_info = f"{initiator.display_name} (ID: {initiator.id})"

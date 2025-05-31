@@ -44,6 +44,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    tmpfs:
+      - /data/db
 
 volumes:
   mongo_data: 
