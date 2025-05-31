@@ -8,5 +8,5 @@ class Payload(BaseModel):
     Abstract base class for all payloads handled by agents.
     """
     chatmill_id: str
-    external_id: Optional[str]
+    external_id: Optional[str] = None
     message_ids: List[str]

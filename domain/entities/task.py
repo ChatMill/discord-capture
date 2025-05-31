@@ -11,7 +11,7 @@ class Task(Payload, BaseModel):
     Inherits from Payload and Pydantic BaseModel.
     """
 
-    external_id: Optional[str]
+    external_id: Optional[str] = None
     title: str
     description: str
     message_ids: List[str]
