@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 from infrastructure.repositories.session_repository_impl import SessionRepositoryImpl
 from infrastructure.repositories.event_repository_impl import EventRepositoryImpl
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -10,15 +11,32 @@ db = client["chatmill"]
 session_repo = SessionRepositoryImpl(db)
 event_repo = EventRepositoryImpl(db)
 
-async def list_message_handler(session_id: str):
+async def list_message_handler(interaction, session_id: Optional[str] = None):
     """
     Handler for MissSpec list-message command.
-    Given a session_id, returns all messages involved in the session as compact Discord embeds (one per message, minimal height).
+    Accepts optional session_id, fetches session by id or by channel+guild, returns all messages as Discord embeds.
     """
-    session = await session_repo.find({"session_id": session_id})
-    if not session:
-        embed = discord.Embed(title="Session Not Found", description=f"Session not found: {session_id}", color=discord.Color.red())
-        return [embed]
+    session = None
+    channel_id = str(interaction.channel_id)
+    guild_id = str(interaction.guild_id)
+    if session_id:
+        session = await session_repo.find({"session_id": session_id})
+        if not session:
+            embed = discord.Embed(title="Session Not Found", description=f"Session not found: {session_id}", color=discord.Color.red())
+            return [embed]
+    else:
+        sessions = await session_repo.find_many({
+            "source.organization_id": guild_id,
+            "source.project_id": channel_id
+        })
+        if len(sessions) == 0:
+            embed = discord.Embed(title="No Session", description="No session found for this channel. Please start a session or specify a session ID.", color=discord.Color.red())
+            return [embed]
+        if len(sessions) > 1:
+            embed = discord.Embed(title="Multiple Sessions", description="Multiple sessions found for this channel. Please specify a session ID to disambiguate.", color=discord.Color.red())
+            return [embed]
+        session = sessions[0]
+        session_id = session.session_id
     event_ids = session.history
     # 并发查找所有 event
     events = await asyncio.gather(*[event_repo.find({"event_id": eid}) for eid in event_ids])
