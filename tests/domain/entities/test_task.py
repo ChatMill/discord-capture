@@ -1,13 +1,13 @@
 import pytest
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 
-class TestTask:
+class TestSpec:
     """
-    Unit tests for the Task entity.
+    Unit tests for the Spec entity.
     """
-    def test_task_creation(self):
-        """Test creating a Task entity with all fields."""
-        task = Task(
+    def test_spec_creation(self):
+        """Test creating a Spec entity with all fields."""
+        spec = Spec(
             chatmill_id="cmid",
             external_id="eid",
             title="Implement feature X",
@@ -18,47 +18,47 @@ class TestTask:
             storypoints=5.0,
             assignees=["u1", "u2"],
             priority="high",
-            parent_task=None,
-            sub_tasks=[]
+            parent_spec=None,
+            sub_specs=[]
         )
-        assert task.title == "Implement feature X"
-        assert task.description == "Details about feature X"
-        assert task.storypoints == 5.0
-        assert task.assignees == ["u1", "u2"]
-        assert task.priority == "high"
-        assert task.sub_tasks == []
+        assert spec.title == "Implement feature X"
+        assert spec.description == "Details about feature X"
+        assert spec.storypoints == 5.0
+        assert spec.assignees == ["u1", "u2"]
+        assert spec.priority == "high"
+        assert spec.sub_specs == []
 
-    def test_task_with_subtasks(self):
-        """Test Task entity with nested sub_tasks."""
-        sub = Task(
+    def test_spec_with_subspecs(self):
+        """Test Spec entity with nested sub_specs."""
+        sub = Spec(
             chatmill_id="cmid2",
-            title="Subtask",
-            description="Subtask desc",
+            title="Subspec",
+            description="Subspec desc",
             message_ids=["m3"]
         )
-        task = Task(
+        spec = Spec(
             chatmill_id="cmid",
             title="Parent",
             description="Parent desc",
             message_ids=["m1"],
-            sub_tasks=[sub]
+            sub_specs=[sub]
         )
-        assert len(task.sub_tasks) == 1
-        assert task.sub_tasks[0].title == "Subtask"
+        assert len(spec.sub_specs) == 1
+        assert spec.sub_specs[0].title == "Subspec"
 
-    def test_task_serialization(self):
-        """Test serialization and deserialization of Task entity."""
-        task = Task(
+    def test_spec_serialization(self):
+        """Test serialization and deserialization of Spec entity."""
+        spec = Spec(
             chatmill_id="cmid",
             title="T",
             description="D",
             message_ids=["m1"]
         )
-        data = task.dict()
-        task2 = Task.parse_obj(data)
-        assert task2 == task
+        data = spec.dict()
+        spec2 = Spec.parse_obj(data)
+        assert spec2 == spec
 
-    def test_task_missing_required(self):
+    def test_spec_missing_required(self):
         """Test that missing required fields raise ValidationError."""
         with pytest.raises(Exception):
-            Task(title="T", description="D", message_ids=["m1"])  # missing chatmill_id 
+            Spec(title="T", description="D", message_ids=["m1"])  # missing chatmill_id

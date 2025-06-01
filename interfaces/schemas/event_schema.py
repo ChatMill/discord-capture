@@ -4,7 +4,7 @@ from typing import List
 import discord
 
 from domain.entities.message import Message
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.events.capture import Capture
 from domain.value_objects.agent_profile import AgentProfile
 from infrastructure.platform.webhook_handler import WebhookName
@@ -13,15 +13,15 @@ from infrastructure.platform.webhook_handler import WebhookName
 def build_capture_event(
         interaction: discord.Interaction,
         messages: List[Message],
-        task: Task,
+        spec: Spec,
         session_id: str
 ) -> Capture:
     """
-    Build a Capture event from raw handler data and a pre-built task (payload).
+    Build a Capture event from raw handler data and a pre-built spec (payload).
     Args:
         interaction: The Discord interaction that triggered the event
         messages: List of domain Message objects
-        task: The pre-built Task (payload) object
+        spec: The pre-built Spec (payload) object
         session_id: The session id to use for the event
     Returns:
         Capture: A fully assembled Capture event
@@ -43,7 +43,7 @@ def build_capture_event(
         session_id=session_id,
         event_id=event_id,
         operator_id=str(interaction.user.id),
-        payload=task,
+        payload=spec,
         history=[],
         messages=messages,
         agent_profile=agent_profile

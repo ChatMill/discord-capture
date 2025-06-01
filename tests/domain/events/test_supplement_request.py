@@ -1,33 +1,33 @@
 import pytest
 from domain.events.supplement_request import SupplementRequest, EventType
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 
 class TestSupplementRequestEvent:
     """
     Unit tests for the SupplementRequest event entity.
     """
     def test_supplement_request_creation(self):
-        task = Task(chatmill_id="cmid", title="T", description="D", message_ids=["m1"])
+        spec = Spec(chatmill_id="cmid", title="T", description="D", message_ids=["m1"])
         event = SupplementRequest(
             session_id="s1",
             event_id="e1",
             operator_id="u1",
-            payload=task,
+            payload=spec,
             history=["e0"],
             question="What is your requirement?"
         )
         assert event.session_id == "s1"
-        assert event.payload == task
+        assert event.payload == spec
         assert event.question == "What is your requirement?"
         assert event.event_type == EventType.SUPPLEMENT_REQUEST
 
     def test_supplement_request_serialization(self):
-        task = Task(chatmill_id="cmid2", title="T2", description="D2", message_ids=["m2"])
+        spec = Spec(chatmill_id="cmid2", title="T2", description="D2", message_ids=["m2"])
         data = {
             "session_id": "s2",
             "event_id": "e2",
             "operator_id": "u2",
-            "payload": task.dict(),
+            "payload": spec.dict(),
             "history": ["e1"],
             "question": "Q?",
             "event_type": "supplement_request"

@@ -3,7 +3,7 @@ from typing import Optional
 from application.services.missspec.supplement_service import handle_supplement_command
 from domain.services.message_fetcher_service import MessageFetcherService
 from interfaces.schemas.source_schema import build_source
-from interfaces.schemas.payload_schema import build_task_payload
+from interfaces.schemas.payload_schema import build_spec_payload
 from interfaces.schemas.event_schema import build_capture_event
 from interfaces.schemas.session_schema import build_session
 from domain.services.message_validator import MessageValidator
@@ -72,17 +72,17 @@ async def supplement_handler(interaction, session_id: Optional[str], message_ids
 
     # supplement 正常流程
     source = build_source(interaction, found_ids, participants=None)
-    task = build_task_payload(interaction, found_ids)
+    spec = build_spec_payload(interaction, found_ids)
     event = build_capture_event(
         interaction=interaction,
         messages=fetched_messages,
-        task=task,
+        spec=spec,
         session_id=session_id
     )
     # 追加 event_id 到 history
     session.history.append(event.event_id)
     await session_repo.insert(session)
-    await payload_repo.insert(task)
+    await payload_repo.insert(spec)
     await event_repo.insert(event)
     await asyncio.gather(*(message_repo.insert(m) for m in fetched_messages))
     initiator = interaction.user

@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.events.base_event import Event, EventType
 
 
@@ -14,7 +14,7 @@ class SupplementRequest(Event, BaseModel):
     session_id: str
     event_id: str
     operator_id: str
-    payload: Task
+    payload: Spec
     history: List[str]
     question: str
     event_type: EventType = EventType.SUPPLEMENT_REQUEST

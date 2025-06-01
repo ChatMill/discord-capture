@@ -1,20 +1,20 @@
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.entities.session import Session
 import discord
 from typing import List
 
 
-def build_task_payload(interaction: discord.Interaction, message_ids: List[int]) -> Task:
+def build_spec_payload(interaction: discord.Interaction, message_ids: List[int]) -> Spec:
     """
-    Build a Task (payload) object from interaction and message_ids.
+    Build a Spec (payload) object from interaction and message_ids.
     Args:
         interaction: The Discord interaction that triggered the event
         message_ids: List of message IDs to capture
     Returns:
-        Task: The assembled Task (payload) object
+        Spec: The assembled Spec (payload) object
     """
     chatmill_id = f"missspec-{interaction.guild_id}-{interaction.channel_id}-{interaction.id}"
-    task_payload = Task(
+    spec_payload = Spec(
         chatmill_id=chatmill_id,
         external_id=None,
         title="需求草案标题示例",
@@ -25,10 +25,10 @@ def build_task_payload(interaction: discord.Interaction, message_ids: List[int])
         storypoints=None,
         assignees=[str(interaction.user.id)],
         priority="medium",
-        parent_task=None,
-        sub_tasks=[],
+        parent_spec=None,
+        sub_specs=[],
     )
-    return task_payload
+    return spec_payload
 
 
 def build_session(interaction: discord.Interaction) -> Session:

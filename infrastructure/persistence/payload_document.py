@@ -7,5 +7,5 @@ class PayloadDocument(BaseModel):
     This model is decoupled from the domain entity and is only used for database interaction.
     """
     payload_id: str
-    type: str  # e.g. task, checklist, content_draft, etc.
+    type: str  # e.g. spec, checklist, content_draft, etc.
     data: dict  # All other payload-specific fields, flattened for storage 

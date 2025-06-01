@@ -1,7 +1,7 @@
 import pytest
 from interfaces.schemas import event_schema
 from domain.entities.message import Message
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.value_objects.agent_profile import AgentProfile
 
 class DummyInteraction:
@@ -13,20 +13,20 @@ class DummyInteraction:
         self.client = type("Client", (), {"avatar_url": "avatar"})()
 
 def test_build_capture_event(monkeypatch):
-    # 用真实 Interaction、Message、Task
+    # 用真实 Interaction、Message、Spec
     interaction = DummyInteraction()
     messages = [Message(id="m1", author_id="a1", author_name="n1", content="c1", timestamp="t1"),
                 Message(id="m2", author_id="a2", author_name="n2", content="c2", timestamp="t2")]
-    task = Task(chatmill_id="cmid", message_ids=["m1", "m2"], title="t", description="d")
+    spec = Spec(chatmill_id="cmid", message_ids=["m1", "m2"], title="t", description="d")
     session_id = "sid"
     # Patch WebhookName.MISSSPEC.value
     monkeypatch.setattr(event_schema, "WebhookName", type("WebhookName", (), {"MISSSPEC": type("MISSSPEC", (), {"value": "wh"})()})())
-    event = event_schema.build_capture_event(interaction, messages, task, session_id)
+    event = event_schema.build_capture_event(interaction, messages, spec, session_id)
     # 检查字段
     assert event.session_id == session_id
     assert event.event_id.startswith("evt-1-2-3")
     assert event.operator_id == "4"
-    assert event.payload == task
+    assert event.payload == spec
     assert event.messages == messages
     assert event.agent_profile.webhook_name == "wh"
     assert event.agent_profile.channel_id == 2

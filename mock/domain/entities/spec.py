@@ -3,9 +3,9 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class Task(BaseModel):
+class Spec(BaseModel):
     """
-    Domain entity representing a task payload for Miss Spec agent.
+    Domain entity representing a spec payload for Miss Spec agent.
     """
     chatmill_id: str
     external_id: Optional[str] = None
@@ -17,5 +17,5 @@ class Task(BaseModel):
     storypoints: Optional[float] = None
     assignees: List[str]
     priority: str
-    parent_task: Optional[str] = None
-    sub_tasks: List[str] = []
+    parent_spec: Optional[str] = None
+    sub_specs: List[str] = []

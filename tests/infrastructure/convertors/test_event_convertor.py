@@ -1,7 +1,7 @@
 from infrastructure.convertors.event_convertor import EventConvertor
 from domain.events.capture import Capture
 from infrastructure.persistence.event_document import EventDocument
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.entities.message import Message
 from domain.value_objects.agent_profile import AgentProfile
 from domain.events.base_event import EventType
@@ -27,8 +27,8 @@ def build_message(mid):
         timestamp="2024-01-01T12:00:00Z"
     )
 
-def build_task(pid):
-    return Task(
+def build_spec(pid):
+    return Spec(
         chatmill_id=pid,
         external_id="eid",
         message_ids=["m1", "m2"],
@@ -39,12 +39,12 @@ def build_task(pid):
         storypoints=3.5,
         assignees=["user1"],
         priority="high",
-        parent_task=None,
-        sub_tasks=[]
+        parent_spec=None,
+        sub_specs=[]
     )
 
 def test_to_document_id():
-    payload = build_task("pid")
+    payload = build_spec("pid")
     messages = [build_message("m1"), build_message("m2")]
     agent_profile = build_agent_profile()
     event = Capture(
@@ -65,7 +65,7 @@ def test_to_document_id():
     assert doc.event_type == "capture"
 
 def test_to_document_agent_profile_dict():
-    payload = build_task("pid")
+    payload = build_spec("pid")
     agent_profile = build_agent_profile()
     event = Capture(
         event_id="eid",
@@ -81,7 +81,7 @@ def test_to_document_agent_profile_dict():
     assert doc.agent_profile == agent_profile.dict()
 
 def test_to_document_event_type_value():
-    payload = build_task("pid")
+    payload = build_spec("pid")
     agent_profile = build_agent_profile()
     event = Capture(
         event_id="eid",
@@ -107,7 +107,7 @@ def test_to_entity():
         event_type="capture",
         agent="missspec"
     )
-    payload = build_task("pid")
+    payload = build_spec("pid")
     messages = [build_message("m1"), build_message("m2")]
     agent_profile = build_agent_profile()
     entity = EventConvertor.to_entity(doc, payload, messages, agent_profile)

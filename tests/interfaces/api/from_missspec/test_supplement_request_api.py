@@ -21,7 +21,7 @@ async def test_receive_supplement_request_success(monkeypatch):
             "capture_end": "discord",
             "agent_end": "missspec"
         },
-        "task": {"foo": "bar"}
+        "spec": {"foo": "bar"}
     }
     request = MagicMock(spec=Request)
     request.json = AsyncMock(return_value=data)

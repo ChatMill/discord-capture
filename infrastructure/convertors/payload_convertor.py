@@ -38,8 +38,8 @@ class PayloadConvertor(ABC):
         data = dict(doc.data)
         if 'chatmill_id' not in data:
             data['chatmill_id'] = doc.payload_id
-        # 兼容 Task 必填字段
-        if payload_cls.__name__ == 'Task':
+        # 兼容 Spec 必填字段
+        if payload_cls.__name__ == 'Spec':
             if 'title' not in data:
                 data['title'] = 'unknown'
             if 'description' not in data:

@@ -1,7 +1,7 @@
 from domain.events.capture import Capture
 from infrastructure.persistence.event_document import EventDocument
 from typing import List
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.entities.payload import Payload
 from infrastructure.convertors.payload_convertor import PayloadConvertor
 from infrastructure.persistence.payload_document import PayloadDocument
@@ -36,17 +36,17 @@ class EventConvertor:
         Requires the referenced payload, messages, and agent_profile to be provided.
         history 字段由外部维护，不从 doc 读取。
         """
-        # 统一用 PayloadConvertor.to_entity 还原 payload 为 Task
-        if not isinstance(payload, Task):
+        # 统一用 PayloadConvertor.to_entity 还原 payload 为 Spec
+        if not isinstance(payload, Spec):
             if isinstance(payload, PayloadDocument):
-                payload = PayloadConvertor.to_entity(payload, Task)
+                payload = PayloadConvertor.to_entity(payload, Spec)
             elif isinstance(payload, Payload):
                 # 先转 dict 再转 PayloadDocument
                 payload_doc = PayloadDocument(payload_id=getattr(payload, 'id', None) or getattr(payload, 'chatmill_id', None), type=payload.__class__.__name__, data=payload.dict(exclude={'id', 'chatmill_id'}))
-                payload = PayloadConvertor.to_entity(payload_doc, Task)
+                payload = PayloadConvertor.to_entity(payload_doc, Spec)
             elif isinstance(payload, dict):
                 payload_doc = PayloadDocument(**payload)
-                payload = PayloadConvertor.to_entity(payload_doc, Task)
+                payload = PayloadConvertor.to_entity(payload_doc, Spec)
             else:
                 # 兜底，直接抛错
                 raise ValueError("Unsupported payload type for event conversion")

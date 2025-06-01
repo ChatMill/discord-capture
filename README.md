@@ -89,7 +89,7 @@ discord-capture/
 │   ├── entities/                  # 领域实体与聚合根
 │   │   ├── session.py             # Session 聚合根，管理会话全生命周期
 │   │   ├── message.py             # Message 实体，封装单条消息内容
-│   │   └── structured_payload.py  # StructuredPayload 抽象及 Task/Checklist/ContentDraft 实现
+│   │   └── structured_payload.py  # StructuredPayload 抽象及 Spec/Checklist/ContentDraft 实现
 │   ├── events/                    # 领域事件（Event 抽象及子类）
 │   │   ├── base_event.py          # Event 抽象基类，统一事件通用字段
 │   │   ├── initiate.py            # Initiate 事件，会话启动事件
@@ -187,7 +187,7 @@ classDiagram
       +message_ids: List[str]
     }
 
-    class Task {
+    class Spec {
       +missspec_id: str
       +external_id: str
       +title: str
@@ -198,8 +198,8 @@ classDiagram
       +storypoints: float
       +assignees: List[str]
       +priority: str
-      +parent_task: str
-      +sub_tasks: List[Task]
+      +parent_spec: str
+      +sub_specs: List[Spec]
       +history: List[str]
     }
 
@@ -354,10 +354,10 @@ classDiagram
 
   %% 领域层内部关系
   Session o-- StructuredPayload
-  StructuredPayload <|.. Task
+  StructuredPayload <|.. Spec
   StructuredPayload <|.. Checklist
   StructuredPayload <|.. ContentDraft
-  Task "1" o-- "*" Task : sub_tasks
+  Spec "1" o-- "*" Spec : sub_specs
   Session "1" o-- "*" Message
 
   %% 服务与聚合根/实体依赖
@@ -461,7 +461,7 @@ classDiagram
 领域模型说明：
 
 - StructuredPayload 是所有 agent 能力插件结构化负载的抽象接口，捕获端领域层只依赖该接口。
-- Task 是 Miss Spec agent 的 StructuredPayload 实现，其他 agent（如 Nudge、Echo）可有自己的实现（如 Checklist、ContentDraft）。
+- Spec 是 Miss Spec agent 的 StructuredPayload 实现，其他 agent（如 Nudge、Echo）可有自己的实现（如 Checklist、ContentDraft）。
 - 捕获端领域事件、Session、SupplementRequest、PublishResult 等均与 StructuredPayload 关联，实现平台与业务解耦。
 - 具体业务结构仅在 agent 领域层定义和扩展。
 
@@ -472,7 +472,7 @@ classDiagram
 > - application 层服务（如 CommandService）依赖领域服务（SessionService、CmlEventRelayService、MessageFetcherService）和仓储接口
 > - 领域服务依赖聚合根（Session）、结构化负载（StructuredPayload）、消息（Message）等实体，负责业务规则和状态流转
 > - 仓储实现（如 MongoSessionRepository）实现仓储接口，负责实体持久化
-> - Session 的 agent 字段用于策略分发，动态选择 StructuredPayload 的具体实现（如 Task、Checklist、ContentDraft）
+> - Session 的 agent 字段用于策略分发，动态选择 StructuredPayload 的具体实现（如 Spec、Checklist、ContentDraft）
 > - 事件流和策略分发链路通过服务和 agent 字段实现高度解耦和可扩展
 
 > Event

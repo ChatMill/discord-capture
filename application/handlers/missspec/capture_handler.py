@@ -4,7 +4,7 @@ from typing import Optional
 from application.services.missspec.capture import handle_capture_command
 from domain.services.message_fetcher_service import MessageFetcherService
 from interfaces.schemas.source_schema import build_source
-from interfaces.schemas.payload_schema import build_task_payload
+from interfaces.schemas.payload_schema import build_spec_payload
 from interfaces.schemas.event_schema import build_capture_event
 from interfaces.schemas.session_schema import build_session
 from domain.services.message_validator import MessageValidator
@@ -68,18 +68,18 @@ async def capture_handler(interaction, message_ids: str, participants: Optional[
 
     # Assemble domain objects（只用 fetch 到的消息 id）
     source = build_source(interaction, found_ids, participants_list)
-    task = build_task_payload(interaction, found_ids)
+    spec = build_spec_payload(interaction, found_ids)
     event = build_capture_event(
         interaction=interaction,
         messages=fetched_messages,
-        task=task,
+        spec=spec,
         session_id=session_id
     )
-    session = build_session(source, task, event, session_id=session_id)
+    session = build_session(source, spec, event, session_id=session_id)
 
     # Store all domain objects in MongoDB
     await session_repo.insert(session)
-    await payload_repo.insert(task)
+    await payload_repo.insert(spec)
     await event_repo.insert(event)
     await asyncio.gather(*(message_repo.insert(m) for m in fetched_messages))
 

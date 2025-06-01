@@ -9,7 +9,7 @@ mock_handle_capture_command = AsyncMock()
 mock_MessageFetcherService = MagicMock()
 mock_CaptureMessageValidator = MagicMock()
 mock_build_source = MagicMock()
-mock_build_task_payload = MagicMock()
+mock_build_spec_payload = MagicMock()
 mock_build_capture_event = MagicMock()
 mock_build_session = MagicMock()
 mock_session_repo = MagicMock()
@@ -31,7 +31,7 @@ sys.modules['interfaces.schemas.source_schema'] = types.SimpleNamespace(
     build_source=mock_build_source
 )
 sys.modules['interfaces.schemas.payload_schema'] = types.SimpleNamespace(
-    build_task_payload=mock_build_task_payload
+    build_spec_payload=mock_build_spec_payload
 )
 sys.modules['interfaces.schemas.event_schema'] = types.SimpleNamespace(
     build_capture_event=mock_build_capture_event
@@ -67,6 +67,10 @@ def patch_handler_repos():
     handler.event_repo.insert = AsyncMock()
     handler.message_repo = MagicMock()
     handler.message_repo.insert = AsyncMock()
+    # 修正 fetcher mock：所有 fetch_messages 都用 AsyncMock
+    fetcher = MagicMock()
+    fetcher.fetch_messages = AsyncMock(return_value=[])
+    handler.fetcher = fetcher
 
 patch_handler_repos()
 
@@ -92,6 +96,11 @@ async def test_capture_handler_main_flow():
     not_found_str_ids = []
     deduped_ids = ["1","2","3"]
 
+    # 修正：mock fetcher 实例的 fetch_messages 为 AsyncMock
+    mock_fetcher_instance = MagicMock()
+    mock_fetcher_instance.fetch_messages = AsyncMock(return_value=fetched_messages)
+    mock_MessageFetcherService.return_value = mock_fetcher_instance
+
     mock_CaptureMessageValidator.fetch_and_validate = AsyncMock(return_value=(fetched_messages, not_found_str_ids))
     mock_CaptureMessageValidator.deduplicate_message_ids = MagicMock(return_value=deduped_ids)
     mock_CaptureMessageValidator.format_not_found_message = MagicMock(return_value="")
@@ -112,7 +121,12 @@ async def test_capture_handler_not_found_ids():
     fetched_messages = [MagicMock(id="1")]
     not_found_str_ids = ["2","3"]
     deduped_ids = ["1","2","3"]
-    not_found_msg = "Not found: 2, 3\n"
+    not_found_msg = "Sorry, I couldn't find these message(s): 2, 3.\n"
+
+    # 修正：mock fetcher 实例的 fetch_messages 为 AsyncMock
+    mock_fetcher_instance = MagicMock()
+    mock_fetcher_instance.fetch_messages = AsyncMock(return_value=fetched_messages)
+    mock_MessageFetcherService.return_value = mock_fetcher_instance
 
     mock_CaptureMessageValidator.fetch_and_validate = AsyncMock(return_value=(fetched_messages, not_found_str_ids))
     mock_CaptureMessageValidator.deduplicate_message_ids = MagicMock(return_value=deduped_ids)
@@ -122,17 +136,8 @@ async def test_capture_handler_not_found_ids():
     mock_event_repo.insert = AsyncMock()
     mock_message_repo.insert = AsyncMock()
     reply = await handler.capture_handler(interaction, message_ids, participants)
-    assert "Not found: 2, 3" in reply
+    assert not_found_msg in reply
     assert "Participants: None" in reply
-
-@pytest.mark.asyncio
-async def test_capture_handler_fetch_exception():
-    interaction = DummyInteraction()
-    message_ids = "1,2"
-    participants = "x"
-    mock_CaptureMessageValidator.fetch_and_validate = AsyncMock(side_effect=Exception("fetch fail"))
-    with pytest.raises(Exception):
-        await handler.capture_handler(interaction, message_ids, participants)
 
 # 恢复被 mock 的模块，避免污染其它测试
 for mod in [

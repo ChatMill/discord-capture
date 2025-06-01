@@ -1,6 +1,6 @@
 import pytest
 from domain.events.supplement_response import SupplementResponse, EventType
-from domain.entities.task import Task
+from domain.entities.spec import Spec
 from domain.entities.message import Message
 
 class TestSupplementResponseEvent:
@@ -8,31 +8,31 @@ class TestSupplementResponseEvent:
     Unit tests for the SupplementResponse event entity.
     """
     def test_supplement_response_creation(self):
-        task = Task(chatmill_id="cmid", title="T", description="D", message_ids=["m1"])
+        spec = Spec(chatmill_id="cmid", title="T", description="D", message_ids=["m1"])
         msg = Message(id="1", author_id="a", author_name="n", content="c", timestamp="t")
         event = SupplementResponse(
             session_id="s1",
             event_id="e1",
             operator_id="u1",
-            payload=task,
+            payload=spec,
             history=["e0"],
             supplement_messages=["extra info"],
             messages=[msg]
         )
         assert event.session_id == "s1"
-        assert event.payload == task
+        assert event.payload == spec
         assert event.supplement_messages == ["extra info"]
         assert event.messages == [msg]
         assert event.event_type == EventType.SUPPLEMENT_RESPONSE
 
     def test_supplement_response_serialization(self):
-        task = Task(chatmill_id="cmid2", title="T2", description="D2", message_ids=["m2"])
+        spec = Spec(chatmill_id="cmid2", title="T2", description="D2", message_ids=["m2"])
         msg = Message(id="2", author_id="b", author_name="m", content="d", timestamp="t2")
         data = {
             "session_id": "s2",
             "event_id": "e2",
             "operator_id": "u2",
-            "payload": task.dict(),
+            "payload": spec.dict(),
             "history": ["e1"],
             "supplement_messages": ["info"],
             "messages": [msg.dict()],
