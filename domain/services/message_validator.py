@@ -2,7 +2,7 @@ from typing import List, Tuple, Any
 from domain.entities.message import Message
 
 
-class CaptureMessageValidator:
+class MessageValidator:
     """
     Utility class for validating, deduplicating, and handling message fetch results in the capture flow.
     Handles missing message ids, deduplication, and provides helper methods for reply formatting.
@@ -31,7 +31,7 @@ class CaptureMessageValidator:
         Fetch messages by ids, return (found_messages, not_found_ids).
         Only found messages are returned as Message entities.
         """
-        deduped_ids = CaptureMessageValidator.deduplicate_message_ids(message_ids)
+        deduped_ids = MessageValidator.deduplicate_message_ids(message_ids)
         fetched_messages = await fetcher.fetch_messages(channel_id, deduped_ids)
         found_ids = {m.id for m in fetched_messages}
         not_found_ids = [mid for mid in deduped_ids if mid not in found_ids]

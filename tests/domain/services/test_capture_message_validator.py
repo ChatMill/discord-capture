@@ -1,6 +1,6 @@
 import pytest
 import asyncio
-from domain.services.capture_message_validator import CaptureMessageValidator
+from domain.services.message_validator import MessageValidator
 from domain.entities.message import Message
 
 class DummyFetcher:
@@ -15,20 +15,20 @@ class TestCaptureMessageValidator:
     """
     def test_deduplicate_message_ids(self):
         ids = ["1", "2", "1", "3", "2"]
-        deduped = CaptureMessageValidator.deduplicate_message_ids(ids)
+        deduped = MessageValidator.deduplicate_message_ids(ids)
         assert deduped == ["1", "2", "3"]
 
     @pytest.mark.asyncio
     async def test_fetch_and_validate(self):
         fetcher = DummyFetcher()
         message_ids = ["1", "x", "2", "y"]
-        found, not_found = await CaptureMessageValidator.fetch_and_validate(message_ids, fetcher, "chan1")
+        found, not_found = await MessageValidator.fetch_and_validate(message_ids, fetcher, "chan1")
         found_ids = [m.id for m in found]
         assert set(found_ids) == {"1", "2"}
         assert set(not_found) == {"x", "y"}
 
     def test_format_not_found_message(self):
-        msg = CaptureMessageValidator.format_not_found_message(["a", "b"])
+        msg = MessageValidator.format_not_found_message(["a", "b"])
         assert "a, b" in msg
         assert "couldn't find" in msg
-        assert CaptureMessageValidator.format_not_found_message([]) == "" 
+        assert MessageValidator.format_not_found_message([]) == ""

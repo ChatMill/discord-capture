@@ -13,6 +13,7 @@ class EventType(str, Enum):
     CAPTURE = "capture"
     SUPPLEMENT_REQUEST = "supplement_request"
     SUPPLEMENT_RESPONSE = "supplement_response"
+    SUPPLEMENT_FINAL = "supplement_final"
     PUBLISH = "publish"
     PUBLISH_RESULT = "publish_result"
 

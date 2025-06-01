@@ -45,6 +45,41 @@ async def receive_capture(request: Request, background_tasks: BackgroundTasks):
     background_tasks.add_task(process_and_send)
     return response.dict()
 
+@app.post("/agent/missspec/supplement")
+async def receive_supplement(request: Request, background_tasks: BackgroundTasks):
+    payload = await request.json()
+    print("[mock_agent] Received Miss Spec supplement event:", payload)
+
+    # Immediately reply with AgentResponse (success)
+    response = AgentResponse(success=True, error=None, data={"status": "received"})
+
+    # Background task: build and send supplement_request after sleep
+    async def process_and_send():
+        import random
+        import asyncio
+        await asyncio.sleep(1.0)  # Simulate AI delay
+        url = "http://discord-capture:8101/capture/discord/supplement_request"
+        try:
+            # 50% 概率终结型 supplement_request
+            if random.random() < 0.5:
+                supplement_request = await build_supplement_request_from_capture(payload)
+                data_to_send = supplement_request.dict()
+            else:
+                # 终结型 supplement_request
+                data_to_send = {
+                    **payload,
+                    "question": "Looks good! You can publish this requirement.",
+                    "event_type": "supplement_final"
+                }
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, json=data_to_send, timeout=10)
+                print(f"[mock_agent] Fired supplement_request, status={resp.status_code}, resp={resp.text}")
+        except Exception as e:
+            print(f"[mock_agent] Failed to fire supplement_request: {e}")
+
+    background_tasks.add_task(process_and_send)
+    return response.dict()
+
 
 if __name__ == "__main__":
     import uvicorn

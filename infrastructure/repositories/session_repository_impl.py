@@ -52,3 +52,22 @@ class SessionRepositoryImpl(SessionRepository):
         # 组装 source
         source = Source(**doc.source)
         return SessionConvertor.to_entity(doc, source, payload)
+
+    async def find_many(self, query: Dict[str, Any]) -> list:
+        """
+        Find multiple session documents by query in MongoDB and convert to domain Session list.
+        Loads referenced payload and source as needed for each session.
+        """
+        cursor = self.collection.find(query)
+        sessions = []
+        async for doc_dict in cursor:
+            doc = SessionDocument(**doc_dict)
+            payload_doc_dict = await self.payload_collection.find_one({"payload_id": doc.payload_id})
+            if not payload_doc_dict:
+                continue
+            payload_doc = PayloadDocument(**payload_doc_dict)
+            payload = PayloadConvertor.to_entity(payload_doc, Payload)
+            source = Source(**doc.source)
+            session = SessionConvertor.to_entity(doc, source, payload)
+            sessions.append(session)
+        return sessions

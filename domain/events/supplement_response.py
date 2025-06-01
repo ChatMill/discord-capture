@@ -20,3 +20,4 @@ class SupplementResponse(Event, BaseModel):
     supplement_messages: List[str]
     messages: List[Message]
     event_type: EventType = EventType.SUPPLEMENT_RESPONSE
+    agent: str = "missspec"

@@ -24,5 +24,4 @@ async def receive_supplement_request(request: Request):
         agent_profile=AgentProfile(**(data.get("agent_profile", {}))),
         embeds=[e.to_dict() for e in embeds]
     )
-
     return JSONResponse(content={"status": "received"}, status_code=200)

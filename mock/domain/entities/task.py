@@ -11,7 +11,7 @@ class Task(BaseModel):
     external_id: Optional[str] = None
     title: str
     description: str
-    message_ids: List[str]
+    message_ids: List[int]
     start_time: Optional[str] = None
     end_time: Optional[str] = None
     storypoints: Optional[float] = None

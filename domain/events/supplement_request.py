@@ -18,3 +18,5 @@ class SupplementRequest(Event, BaseModel):
     history: List[str]
     question: str
     event_type: EventType = EventType.SUPPLEMENT_REQUEST
+    agent: str = "missspec"
+
