@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  discord-capture:
+  discord-adapter:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: discord-capture
+    container_name: discord-adapter
     env_file:
       - .env
     volumes:

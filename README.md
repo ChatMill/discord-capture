@@ -34,7 +34,7 @@ pip install -r requirements.txt
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-- 主服务（discord-capture）：监听 8101 端口
+- 主服务（discord-adapter）：监听 8101 端口
 - mock agent 服务：监听 8201 端口
 - mock publish 服务：监听 8301 端口
 
@@ -54,7 +54,7 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## 项目简介
 
-**discord-capture** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM
+**discord-adapter** 是 [Chatmill](https://github.com/ChatMill) 平台的 IM 捕获端子系统，专注于从 Discord 等主流 IM
 工具自动捕捉频道消息、命令与用户输入，并将其结构化为后续智能处理（agent 能力插件）的原始数据。该模块作为 Chatmill
 全流程自动化协作的起点，支持需求捕捉、内容生成、任务拆解、反馈收集等多种场景。
 
@@ -84,7 +84,7 @@ graph TD
 ## 目录结构
 
 ```text
-discord-capture/
+discord-adapter/
 ├── domain/                        # 领域层：核心业务对象、聚合、服务、事件、仓储接口
 │   ├── entities/                  # 领域实体与聚合根
 │   │   ├── session.py             # Session 聚合根，管理会话全生命周期
@@ -493,12 +493,12 @@ classDiagram
 
 ## JWT 认证与加密实践
 
-Chatmill 捕获端（discord-capture）所有 API、Webhook、事件流等敏感操作均采用 JWT（JSON Web Token）认证机制，保障平台各端通信的身份可信与数据安全。
+Chatmill 捕获端（discord-adapter）所有 API、Webhook、事件流等敏感操作均采用 JWT（JSON Web Token）认证机制，保障平台各端通信的身份可信与数据安全。
 
 ### 1. JWT 用途
 
-- 捕获端作为签发方（iss: "discord-capture"），为下游 agent、发布端等生成认证 token
-- 捕获端作为接收方（aud: "discord-capture"），校验上游/外部请求的身份与权限
+- 捕获端作为签发方（iss: "discord-adapter"），为下游 agent、发布端等生成认证 token
+- 捕获端作为接收方（aud: "discord-adapter"），校验上游/外部请求的身份与权限
 - 支持多平台、多 agent、多租户安全扩展
 
 ### 2. JWT 字段规范
@@ -518,7 +518,7 @@ Chatmill 捕获端（discord-capture）所有 API、Webhook、事件流等敏感
 | exp | 过期时间（Unix 时间戳）          | 是   | 1718000000        |
 | iat | 签发时间（Unix 时间戳）          | 是   | 1717990000        |
 | aud | 受众（接收方微服务/agent唯一英文标识）  | 是   | "miss-spec-agent" |
-| iss | 签发方（签发方微服务/agent唯一英文标识） | 是   | "discord-capture" |
+| iss | 签发方（签发方微服务/agent唯一英文标识） | 是   | "discord-adapter" |
 
 > 建议所有字段均为必填，aud/iss 字段用于微服务/agent 身份校验。
 
@@ -536,7 +536,7 @@ payload = {
     "exp": int(time.time()) + 3600,  # 1小时后过期
     "iat": int(time.time()),
     "aud": "miss-spec-agent",  # 接收方唯一标识
-    "iss": "discord-capture"  # 签发方唯一标识
+    "iss": "discord-adapter"  # 签发方唯一标识
 }
 token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 print(f"JWT Token: {token}")
@@ -548,7 +548,7 @@ try:
         SECRET_KEY,
         algorithms=["HS256"],
         audience="miss-spec-agent",
-        issuer="discord-capture"
+        issuer="discord-adapter"
     )
     print("Decoded payload:", decoded)
 except jwt.ExpiredSignatureError:
@@ -572,7 +572,7 @@ payload = {
     "exp": int(time.time()) + 3600,
     "iat": int(time.time()),
     "aud": "miss-spec-agent",
-    "iss": "discord-capture"
+    "iss": "discord-adapter"
 }
 token = jwt.encode(payload, private_key, algorithm="RS256")
 print(f"JWT Token: {token}")
@@ -583,7 +583,7 @@ try:
         public_key,
         algorithms=["RS256"],
         audience="miss-spec-agent",
-        issuer="discord-capture"
+        issuer="discord-adapter"
     )
     print("Decoded payload:", decoded)
 except jwt.ExpiredSignatureError:

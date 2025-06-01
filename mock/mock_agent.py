@@ -34,7 +34,7 @@ async def receive_capture(request: Request, background_tasks: BackgroundTasks):
         supplement_request = await build_supplement_request_from_capture(payload)
         import asyncio
         await asyncio.sleep(1.0)  # Simulate AI delay
-        url = "http://discord-capture:8101/capture/discord/supplement_request"
+        url = "http://discord-adapter:8101/capture/discord/supplement_request"
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.post(url, json=supplement_request.dict(), timeout=10)
@@ -58,7 +58,7 @@ async def receive_supplement(request: Request, background_tasks: BackgroundTasks
         import random
         import asyncio
         await asyncio.sleep(1.0)  # Simulate AI delay
-        url = "http://discord-capture:8101/capture/discord/supplement_request"
+        url = "http://discord-adapter:8101/capture/discord/supplement_request"
         try:
             # 50% 概率终结型 supplement_request
             if random.random() < 0.5:

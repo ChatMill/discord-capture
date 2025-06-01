@@ -3,7 +3,7 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-# Entry point for the discord-capture application.
+# Entry point for the discord-adapter application.
 
 import threading
 
@@ -21,7 +21,7 @@ app.include_router(from_missspec_router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": "discord-capture"}
+    return {"status": "ok", "service": "discord-adapter"}
 
 
 def run_discord_bot():
